@@ -41,6 +41,7 @@ import rwg.config.ConfigRWG;
 import rwg.deco.DecoClay;
 import rwg.util.CanyonColor;
 import rwg.util.CellNoise;
+import rwg.util.NoiseGenerator;
 import rwg.util.PerlinNoise;
 
 public class ChunkGeneratorRealistic implements IChunkProvider {
@@ -54,7 +55,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
     private final MapGenMineshaft mineshaftGenerator;
     private final MapGenVillage villageGenerator;
 
-    private PerlinNoise perlin;
+    private NoiseGenerator perlin;
     private CellNoise cell;
 
     private RealisticBiomeBase[] biomesForGeneration;

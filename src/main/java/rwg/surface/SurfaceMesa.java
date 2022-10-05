@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import rwg.util.CellNoise;
 import rwg.util.CliffCalculator;
+import rwg.util.NoiseGenerator;
 import rwg.util.PerlinNoise;
 
 public class SurfaceMesa extends SurfaceBase {
@@ -18,7 +19,7 @@ public class SurfaceMesa extends SurfaceBase {
         blockByte = b;
 
         int[] c = new int[] {1, 8, 0};
-        PerlinNoise perlin = new PerlinNoise(2L);
+        NoiseGenerator perlin = new PerlinNoise(2L);
 
         float n;
         for (int i = 0; i < 100; i++) {
@@ -45,7 +46,7 @@ public class SurfaceMesa extends SurfaceBase {
             int depth,
             World world,
             Random rand,
-            PerlinNoise perlin,
+            NoiseGenerator perlin,
             CellNoise cell,
             float[] noise,
             float river,

@@ -11,16 +11,16 @@ import net.minecraft.world.biome.BiomeCache;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManager;
 import rwg.biomes.realistic.RealisticBiomeBase;
-import rwg.biomes.realistic.land.*;
 import rwg.support.Support;
 import rwg.util.CellNoise;
+import rwg.util.NoiseGenerator;
 import rwg.util.PerlinNoise;
 
 public class ChunkManagerRealistic extends WorldChunkManager {
     private BiomeCache biomeCache;
     private List biomesToSpawnIn;
 
-    private PerlinNoise perlin;
+    private NoiseGenerator perlin;
     private CellNoise cell;
 
     private CellNoise biomecell;
