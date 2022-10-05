@@ -53,7 +53,7 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         this();
         long seed = par1World.getSeed();
 
-        perlin = NoiseSelector.CreateNoiseGenerator(seed);
+        perlin = NoiseSelector.createNoiseGenerator(seed);
         cell = new CellNoise(seed, (short) 0);
         cell.setUseDistance(true);
         biomecell = new CellNoise(seed, (short) 0);

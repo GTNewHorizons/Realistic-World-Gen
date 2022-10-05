@@ -90,7 +90,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
         cmr = (ChunkManagerRealistic) worldObj.getWorldChunkManager();
 
         rand = new Random(l);
-        perlin = NoiseSelector.CreateNoiseGenerator(l);
+        perlin = NoiseSelector.createNoiseGenerator(l);
         cell = new CellNoise(l, (short) 0);
         cell.setUseDistance(true);
 

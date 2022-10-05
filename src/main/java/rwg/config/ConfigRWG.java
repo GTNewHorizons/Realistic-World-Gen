@@ -10,6 +10,8 @@ public class ConfigRWG {
     public static boolean generateEmeralds = true;
     public static boolean enableCobblestoneBoulders = true;
 
+    public static String noiseFunction = "default";
+
     public static void init(FMLPreInitializationEvent event) {
         config = new Configuration(event.getSuggestedConfigurationFile());
 
@@ -51,6 +53,9 @@ public class ConfigRWG {
 
             generateEmeralds = config.getBoolean("Generate Emeralds", "Settings", true, "");
             enableCobblestoneBoulders = config.getBoolean("Enable Cobblestone Boulders", "Settings", true, "");
+
+            noiseFunction = config.get("","", "default", "Which noise to use. GTNH 2.2.0.0 used opensimplex, all other versions perlin.", new String[]{"default", "perlin", "opensimplex"}).getString();
+
         } catch (Exception e) {
             for (int c = 0; c < biomeIDs.length; c++) {
                 biomeIDs[c] = 200 + c;

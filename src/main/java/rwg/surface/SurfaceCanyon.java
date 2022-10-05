@@ -18,7 +18,7 @@ public class SurfaceCanyon extends SurfaceBase {
         grassRaise = grassHeight;
 
         int[] c = new int[] {1, 8, 0};
-        NoiseGenerator perlin = NoiseSelector.CreateNoiseGenerator(2L);
+        NoiseGenerator perlin = NoiseSelector.createNoiseGenerator(2L);
 
         float n;
         for (int i = 0; i < 100; i++) {
