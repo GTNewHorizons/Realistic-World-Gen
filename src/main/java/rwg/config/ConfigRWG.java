@@ -54,7 +54,13 @@ public class ConfigRWG {
             generateEmeralds = config.getBoolean("Generate Emeralds", "Settings", true, "");
             enableCobblestoneBoulders = config.getBoolean("Enable Cobblestone Boulders", "Settings", true, "");
 
-            noiseFunction = config.get("","", "default", "Which noise to use. GTNH 2.2.0.0 used opensimplex, all other versions perlin.", new String[]{"default", "perlin", "opensimplex"}).getString();
+            noiseFunction = config.get(
+                            "",
+                            "",
+                            "default",
+                            "Which noise to use. GTNH 2.2.0.0 used opensimplex, all other versions perlin.",
+                            new String[] {"default", "perlin", "opensimplex"})
+                    .getString();
 
         } catch (Exception e) {
             for (int c = 0; c < biomeIDs.length; c++) {

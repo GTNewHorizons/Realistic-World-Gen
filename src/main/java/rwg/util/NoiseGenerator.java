@@ -37,5 +37,4 @@ public interface NoiseGenerator {
      * @return A noisy value at the given position
      */
     float noise3(float x, float y, float z);
-
 }
