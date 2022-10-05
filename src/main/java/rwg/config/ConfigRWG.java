@@ -2,6 +2,7 @@ package rwg.config;
 
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 
 public class ConfigRWG {
     public static Configuration config;
@@ -54,13 +55,7 @@ public class ConfigRWG {
             generateEmeralds = config.getBoolean("Generate Emeralds", "Settings", true, "");
             enableCobblestoneBoulders = config.getBoolean("Enable Cobblestone Boulders", "Settings", true, "");
 
-            noiseFunction = config.get(
-                            "",
-                            "",
-                            "default",
-                            "Which noise to use. GTNH 2.2.0.0 used opensimplex, all other versions perlin.",
-                            new String[] {"default", "perlin", "opensimplex"})
-                    .getString();
+            noiseFunction = getNoiseGeneratorProperty().getString();
 
         } catch (Exception e) {
             for (int c = 0; c < biomeIDs.length; c++) {
@@ -70,6 +65,29 @@ public class ConfigRWG {
             if (config.hasChanged()) {
                 config.save();
             }
+        }
+    }
+
+    private static Property getNoiseGeneratorProperty() {
+        return config.get(
+                "compat",
+                "noise generator",
+                "default",
+                "Which noise to use. GTNH 2.2.0.0 used opensimplex, all other versions perlin.",
+                new String[] {"default", "perlin", "opensimplex"});
+    }
+
+    public static void setNoiseFunction(String newNoiseFunction) {
+        if (config == null) {
+            return;
+        }
+        noiseFunction = newNoiseFunction;
+        Property prop = getNoiseGeneratorProperty();
+
+        prop.set(newNoiseFunction);
+
+        if (config.hasChanged()) {
+            config.save();
         }
     }
 }
