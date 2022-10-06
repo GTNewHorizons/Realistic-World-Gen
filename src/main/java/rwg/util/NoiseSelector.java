@@ -1,19 +1,28 @@
 package rwg.util;
 
-import rwg.config.ConfigRWG;
+import rwg.world.RwgWorldSavedData;
 
 public class NoiseSelector {
-    public static NoiseGenerator createNoiseGenerator() {
-
-        if (ConfigRWG.noiseFunction.equals("opensimplex")) return new OpenSimplexNoise();
-
-        return new PerlinNoise();
-    }
-
     public static NoiseGenerator createNoiseGenerator(long seed) {
 
-        if (ConfigRWG.noiseFunction.equals("opensimplex")) return new OpenSimplexNoise(seed);
+        NoiseImplementation noiseImplementation = RwgWorldSavedData.getNoiseImplementation();
 
-        return new PerlinNoise(seed);
+        switch (noiseImplementation) {
+            case UNKNOWN:
+            case DYNAMICPERLIN:
+                NoiseGeneratorWrapper.useOpenSimplex = false;
+                return new NoiseGeneratorWrapper(seed);
+            case PERLIN:
+                NoiseGeneratorWrapper.useOpenSimplex = false;
+                return new PerlinNoise(seed);
+            case OPENSIMPLEX:
+                NoiseGeneratorWrapper.useOpenSimplex = true;
+                return new OpenSimplexNoise(seed);
+            case DYNAMICOPENSIMPLEX:
+                NoiseGeneratorWrapper.useOpenSimplex = true;
+                return new NoiseGeneratorWrapper(seed);
+        }
+
+        return new NoiseGeneratorWrapper(seed);
     }
 }

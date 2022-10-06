@@ -3,6 +3,7 @@ package rwg.config;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import rwg.util.NoiseGeneratorWrapper;
 
 public class ConfigRWG {
     public static Configuration config;
@@ -57,6 +58,8 @@ public class ConfigRWG {
 
             noiseFunction = getNoiseGeneratorProperty().getString();
 
+            if (noiseFunction.equals("opensimplex")) NoiseGeneratorWrapper.useOpenSimplex = true;
+
         } catch (Exception e) {
             for (int c = 0; c < biomeIDs.length; c++) {
                 biomeIDs[c] = 200 + c;
@@ -85,6 +88,7 @@ public class ConfigRWG {
         Property prop = getNoiseGeneratorProperty();
 
         prop.set(newNoiseFunction);
+        NoiseGeneratorWrapper.useOpenSimplex = newNoiseFunction.equals("opensimplex");
 
         if (config.hasChanged()) {
             config.save();
