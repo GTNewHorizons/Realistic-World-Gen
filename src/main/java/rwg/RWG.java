@@ -1,5 +1,6 @@
 package rwg;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -12,9 +13,11 @@ import net.minecraft.command.ServerCommandManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import rwg.biomes.base.BaseBiomes;
+import rwg.commands.RwgBugInfoCommand;
 import rwg.commands.RwgNoiseCommand;
 import rwg.config.ConfigRWG;
 import rwg.data.VillageMaterials;
+import rwg.handlers.LoginHandler;
 import rwg.support.Support;
 import rwg.world.WorldTypeRealistic;
 
@@ -33,6 +36,8 @@ public class RWG {
         BaseBiomes.load();
 
         MinecraftForge.TERRAIN_GEN_BUS.register(new VillageMaterials());
+
+        FMLCommonHandler.instance().bus().register(new LoginHandler());
         // MinecraftForge.TERRAIN_GEN_BUS.register(new TreeReplacement());
     }
 
@@ -51,5 +56,6 @@ public class RWG {
         ServerCommandManager manager = (ServerCommandManager) command;
 
         manager.registerCommand(new RwgNoiseCommand());
+        manager.registerCommand(new RwgBugInfoCommand());
     }
 }
