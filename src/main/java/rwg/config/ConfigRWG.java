@@ -2,8 +2,6 @@ package rwg.config;
 
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
-import rwg.util.NoiseGeneratorWrapper;
 
 public class ConfigRWG {
     public static Configuration config;
@@ -11,8 +9,6 @@ public class ConfigRWG {
 
     public static boolean generateEmeralds = true;
     public static boolean enableCobblestoneBoulders = true;
-
-    public static String noiseFunction = "default";
 
     public static void init(FMLPreInitializationEvent event) {
         config = new Configuration(event.getSuggestedConfigurationFile());
@@ -56,10 +52,6 @@ public class ConfigRWG {
             generateEmeralds = config.getBoolean("Generate Emeralds", "Settings", true, "");
             enableCobblestoneBoulders = config.getBoolean("Enable Cobblestone Boulders", "Settings", true, "");
 
-            noiseFunction = getNoiseGeneratorProperty().getString();
-
-            if (noiseFunction.equals("opensimplex")) NoiseGeneratorWrapper.useOpenSimplex = true;
-
         } catch (Exception e) {
             for (int c = 0; c < biomeIDs.length; c++) {
                 biomeIDs[c] = 200 + c;
@@ -68,30 +60,6 @@ public class ConfigRWG {
             if (config.hasChanged()) {
                 config.save();
             }
-        }
-    }
-
-    private static Property getNoiseGeneratorProperty() {
-        return config.get(
-                "compat",
-                "noise generator",
-                "default",
-                "Which noise to use. GTNH 2.2.0.0 used opensimplex, all other versions perlin.",
-                new String[] {"default", "perlin", "opensimplex"});
-    }
-
-    public static void setNoiseFunction(String newNoiseFunction) {
-        if (config == null) {
-            return;
-        }
-        noiseFunction = newNoiseFunction;
-        Property prop = getNoiseGeneratorProperty();
-
-        prop.set(newNoiseFunction);
-        NoiseGeneratorWrapper.useOpenSimplex = newNoiseFunction.equals("opensimplex");
-
-        if (config.hasChanged()) {
-            config.save();
         }
     }
 }
