@@ -31,4 +31,14 @@ public class RwgBugInfoCommand extends CommandBase {
     public void processCommand(ICommandSender iCommandSender, String[] strings) {
         Arrays.stream(BUG_INFO_MESSAGE).map(ChatComponentText::new).forEach(iCommandSender::addChatMessage);
     }
+
+    @Override
+    public int getRequiredPermissionLevel() {
+        return 0;
+    }
+
+    @Override
+    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+        return true;
+    }
 }
