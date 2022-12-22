@@ -4,7 +4,7 @@ import java.util.Locale;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import rwg.util.NoiseGeneratorWrapper;
 import rwg.util.NoiseImplementation;
 import rwg.world.RwgWorldSavedData;
@@ -30,12 +30,12 @@ public class RwgNoiseCommand extends CommandBase {
         NoiseImplementation current = RwgWorldSavedData.getNoiseImplementation();
 
         if (args[0].equals("get")) {
-            sender.addChatMessage(new ChatComponentText("Current noise type is " + current));
+            sender.addChatMessage(new ChatComponentTranslation("rwg.noise.current_type", current));
             return;
         }
 
         NoiseImplementation noiseImplementation = NoiseImplementation.valueOf(args[0].toUpperCase(Locale.ROOT));
-        boolean wasDynamic = true;
+        final boolean wasDynamic;
         switch (current) {
             case UNKNOWN:
             case DYNAMICPERLIN:
@@ -46,42 +46,37 @@ public class RwgNoiseCommand extends CommandBase {
             case OPENSIMPLEX:
                 wasDynamic = false;
                 break;
+            default:
+                throw new IllegalStateException(
+                        "Invalid current noise implementation value: " + noiseImplementation.toString());
         }
 
         if (current != noiseImplementation) {
             switch (noiseImplementation) {
                 case UNKNOWN:
                     NoiseGeneratorWrapper.useOpenSimplex = false;
-                    sender.addChatMessage(
-                            new ChatComponentText("Set noise type to UNKNOWN, which will default to Perlin."));
+                    sender.addChatMessage(new ChatComponentTranslation("rwg.noise.was_set_to.unknown"));
                     break;
                 case DYNAMICPERLIN:
-                    NoiseGeneratorWrapper.useOpenSimplex = false;
-                    sender.addChatMessage(new ChatComponentText("Set noise type to DYNAMICPERLIN."));
-                    break;
                 case PERLIN:
                     NoiseGeneratorWrapper.useOpenSimplex = false;
-                    sender.addChatMessage(new ChatComponentText("Set noise type to PERLIN."));
+                    sender.addChatMessage(new ChatComponentTranslation(
+                            "rwg.noise.was_set_to.generic", noiseImplementation.toString()));
                     break;
                 case DYNAMICOPENSIMPLEX:
-                    NoiseGeneratorWrapper.useOpenSimplex = true;
-                    sender.addChatMessage(new ChatComponentText("Set noise type to DYNAMICOPENSIMPLEX."));
-                    break;
                 case OPENSIMPLEX:
                     NoiseGeneratorWrapper.useOpenSimplex = true;
-                    sender.addChatMessage(new ChatComponentText("Set noise type to OPENSIMPLEX."));
+                    sender.addChatMessage(new ChatComponentTranslation(
+                            "rwg.noise.was_set_to.generic", noiseImplementation.toString()));
                     break;
             }
             if (wasDynamic) {
-                sender.addChatMessage(new ChatComponentText(
-                        "All new chunks will instantly be generated with the selected algorithm."));
+                sender.addChatMessage(new ChatComponentTranslation("rwg.noise.instant_new_chunks"));
             } else {
-                sender.addChatMessage(
-                        new ChatComponentText(
-                                "World must be reloaded (server restarted or single player relog) for changes to take effect."));
+                sender.addChatMessage(new ChatComponentTranslation("rwg.noise.needs_restart"));
             }
         } else {
-            sender.addChatMessage(new ChatComponentText("Noise type unchanged. "));
+            sender.addChatMessage(new ChatComponentTranslation("rwg.noise.unchanged"));
         }
 
         RwgWorldSavedData.setNoiseImplementation(noiseImplementation);
