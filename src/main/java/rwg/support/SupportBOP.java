@@ -2,13 +2,13 @@ package rwg.support;
 
 import net.minecraft.init.Blocks;
 
+import biomesoplenty.api.content.BOPCBiomes;
 import rwg.api.RWGBiomes;
 import rwg.support.Support.BiomeCategory;
 import rwg.support.edit.*;
 import rwg.surface.*;
 import rwg.surface.river.SurfaceRiverOasis;
 import rwg.terrain.*;
-import biomesoplenty.api.content.BOPCBiomes;
 
 public class SupportBOP {
 

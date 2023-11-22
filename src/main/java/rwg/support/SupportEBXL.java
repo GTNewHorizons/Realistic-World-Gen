@@ -2,13 +2,13 @@ package rwg.support;
 
 import net.minecraft.init.Blocks;
 
+import extrabiomes.api.BiomeManager;
 import rwg.api.RWGBiomes;
 import rwg.support.Support.BiomeCategory;
 import rwg.support.edit.*;
 import rwg.surface.*;
 import rwg.surface.river.SurfaceRiverOasis;
 import rwg.terrain.*;
-import extrabiomes.api.BiomeManager;
 
 public class SupportEBXL {
 

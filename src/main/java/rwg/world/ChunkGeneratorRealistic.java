@@ -37,11 +37,11 @@ import net.minecraftforge.event.terraingen.OreGenEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.event.terraingen.TerrainGen;
 
+import cpw.mods.fml.common.eventhandler.Event.Result;
 import rwg.biomes.realistic.RealisticBiomeBase;
 import rwg.config.ConfigRWG;
 import rwg.deco.DecoClay;
 import rwg.util.*;
-import cpw.mods.fml.common.eventhandler.Event.Result;
 
 public class ChunkGeneratorRealistic implements IChunkProvider {
 
