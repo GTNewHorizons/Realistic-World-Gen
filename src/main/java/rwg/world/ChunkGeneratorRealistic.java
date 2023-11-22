@@ -41,7 +41,10 @@ import cpw.mods.fml.common.eventhandler.Event.Result;
 import rwg.biomes.realistic.RealisticBiomeBase;
 import rwg.config.ConfigRWG;
 import rwg.deco.DecoClay;
-import rwg.util.*;
+import rwg.util.CanyonColor;
+import rwg.util.CellNoise;
+import rwg.util.NoiseGenerator;
+import rwg.util.NoiseSelector;
 
 public class ChunkGeneratorRealistic implements IChunkProvider {
 
