@@ -71,7 +71,7 @@ public class ConfigRWG {
         }
     }
 
-    private static void renameOldProperties(){
+    private static void renameOldProperties() {
         config.renameProperty("Biome IDs", "00 rwg_riverIce", "00 Ice River");
         config.renameProperty("Biome IDs", "01 rwg_riverCold", "01 Cold River");
         config.renameProperty("Biome IDs", "02 rwg_riverTemperate", "02 Temperate River");
