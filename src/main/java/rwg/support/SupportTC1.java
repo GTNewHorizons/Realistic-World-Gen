@@ -8,7 +8,7 @@ import rwg.support.Support.BiomeCategory;
 import rwg.surface.SurfaceGrassland;
 import rwg.terrain.TerrainSmallSupport;
 
-public class SupportTC {
+public class SupportTC1 {
     /*
      * THAUMCRAFT BIOMES 118: "Tainted Land" 119: "Magical Forest"
      */
