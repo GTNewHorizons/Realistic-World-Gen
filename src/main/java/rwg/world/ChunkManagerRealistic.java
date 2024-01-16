@@ -11,12 +11,12 @@ import net.minecraft.world.biome.BiomeCache;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManager;
 
+import gnu.trove.map.hash.TLongObjectHashMap;
 import rwg.biomes.realistic.RealisticBiomeBase;
 import rwg.support.Support;
 import rwg.util.CellNoise;
 import rwg.util.NoiseGenerator;
 import rwg.util.NoiseSelector;
-import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class ChunkManagerRealistic extends WorldChunkManager {
 
@@ -328,6 +328,7 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     }
 
     public float calculateRiver(int x, int y, float st, float biomeHeight) {
+
         if (st < 0f && biomeHeight > 59f) {
             float pX = x + (perlin.noise1(y / 240f) * 220f);
             float pY = y + (perlin.noise1(x / 240f) * 220f);
