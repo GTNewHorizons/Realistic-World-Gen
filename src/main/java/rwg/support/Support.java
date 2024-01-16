@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import cpw.mods.fml.common.Loader;
 import rwg.biomes.realistic.RealisticBiomeBase;
+import rwg.config.ConfigRWG;
 
 public class Support {
 
@@ -39,9 +40,13 @@ public class Support {
             SupportEBXL.init();
         }
 
-        if (Loader.isModLoaded("Thaumcraft")) {
-            SupportTC.init();
-        }
+        if (ConfigRWG.suptcbig) {
+            if (Loader.isModLoaded("Thaumcraft")) {
+                SupportTC.init();
+            }
+		} else if (Loader.isModLoaded("Thaumcraft")) {
+            SupportTC1.init();
+		}
 
         if (Loader.isModLoaded("ChromatiCraft")) {
             SupportCC.init();
