@@ -3,7 +3,7 @@
 http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/1281910-teds-world-gen-mods-realistic-world-gen-alpha-1-3
 
 ## CHANGELOG ##
-     outdated
+     
         Version Alpha 1.3 '03-01-2015'
         - Added rivers
         - Fixed animals spawing in deserts
