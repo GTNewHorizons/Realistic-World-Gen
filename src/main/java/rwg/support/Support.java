@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import cpw.mods.fml.common.Loader;
 import rwg.biomes.realistic.RealisticBiomeBase;
-import rwg.config.ConfigRWG;
 
 public class Support {
 
