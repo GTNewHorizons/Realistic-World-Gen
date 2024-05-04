@@ -4,11 +4,11 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.biome.BiomeGenBase;
 
 import rwg.api.RWGBiomes;
+import rwg.config.ConfigRWG;
 import rwg.support.Support.BiomeCategory;
 import rwg.surface.SurfaceGrassland;
 import rwg.terrain.TerrainHighland;
 import rwg.terrain.TerrainSmallSupport;
-import rwg.config.ConfigRWG;
 
 public class SupportTC {
     /*
