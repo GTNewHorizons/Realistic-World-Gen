@@ -34,17 +34,31 @@ public class SupportTC {
                 }
 
                 if (b[i].biomeName == "Magical Forest") {
-                    Support.addBiome(
-                            new RealisticBiomeSupport(
-                                    b[i],
-                                    RWGBiomes.baseTemperateForest,
-                                    new TerrainHighland(6f, 120f, 65f, 150f),
-                                    new SurfaceGrassland(
-                                            b[i].topBlock,
-                                            b[i].fillerBlock,
-                                            Blocks.stone,
-                                            Blocks.cobblestone)),
-                            BiomeCategory.WET);
+                    if (ConfigRWG.generateLargeThaumcraftBiomes) {
+                        Support.addBiome(
+                                new RealisticBiomeSupport(
+                                        b[i],
+                                        RWGBiomes.baseTemperateForest,
+                                        new TerrainHighland(6f, 120f, 65f, 150f),
+                                        new SurfaceGrassland(
+                                                b[i].topBlock,
+                                                b[i].fillerBlock,
+                                                Blocks.stone,
+                                                Blocks.cobblestone)),
+                                BiomeCategory.WET);
+                    } else {
+                        Support.addBiome(
+                                new RealisticBiomeSupport(
+                                        b[i],
+                                        RWGBiomes.baseRiverTemperate,
+                                        new TerrainSmallSupport(),
+                                        new SurfaceGrassland(
+                                                b[i].topBlock,
+                                                b[i].fillerBlock,
+                                                Blocks.stone,
+                                                Blocks.cobblestone)),
+                                BiomeCategory.SMALL);
+                    }
                 }
             }
         }
