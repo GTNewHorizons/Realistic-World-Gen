@@ -42,6 +42,10 @@ public class Support {
         if (Loader.isModLoaded("Thaumcraft")) {
             SupportTC.init();
         }
+        if (Loader.isModLoaded("ChromatiCraft")) {
+            SupportCC.init();
+        }
+        /** ChromatiCraft is non-supported content. if this ever errors out in some way feel free to remove this. */
     }
 
     public static void addBiome(RealisticBiomeSupport b, BiomeCategory cat) {
