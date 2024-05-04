@@ -16,7 +16,7 @@ public class ConfigRWG {
     public static boolean generateVillages = true;
     public static boolean generateUndergroundLakes = true;
     public static boolean generateUndergroundLavaLakes = true;
-    public static boolean suptcbig = true;
+    public static boolean generateLargeThaumcraftBiomes = true;
 
     public static void init(FMLPreInitializationEvent event) {
         config = new Configuration(event.getSuggestedConfigurationFile());
