@@ -8,6 +8,7 @@ import rwg.support.Support.BiomeCategory;
 import rwg.surface.SurfaceGrassland;
 import rwg.terrain.TerrainHighland;
 import rwg.terrain.TerrainSmallSupport;
+import rwg.config.ConfigRWG;
 
 public class SupportTC {
     /*
