@@ -60,7 +60,7 @@ public class ConfigRWG {
             generateVillages = config.getBoolean("Generate Villages", "Settings", true, "");
             generateUndergroundLakes = config.getBoolean("Generate Underground Lakes", "Settings", true, "");
             generateUndergroundLavaLakes = config.getBoolean("Generate Underground Lava Lakes", "Settings", true, "");
-            suptcbig = config.getBoolean("Support TC Biome big", "Settings", true, "");
+            generateLargeThaumcraftBiomes = config.getBoolean("Generate large Thaumcraft biomes", "Settings", true, "");
 
         } catch (Exception e) {
             for (int c = 0; c < biomeIDs.length; c++) {
