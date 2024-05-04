@@ -40,14 +40,9 @@ public class Support {
             SupportEBXL.init();
         }
 
-        if (ConfigRWG.suptcbig) {
-            if (Loader.isModLoaded("Thaumcraft")) {
-                SupportTC.init();
-            }
-        } else if (Loader.isModLoaded("Thaumcraft")) {
-            SupportTC1.init();
+        if (Loader.isModLoaded("Thaumcraft")) {
+            SupportTC.init();
         }
-
         if (Loader.isModLoaded("ChromatiCraft")) {
             SupportCC.init();
         }
