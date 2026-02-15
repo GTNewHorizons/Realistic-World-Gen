@@ -26,7 +26,6 @@ public class RwgWorldSavedData extends WorldSavedData {
     public void readFromNBT(NBTTagCompound nbtTagCompound) {
         String noiseImplementation = nbtTagCompound.getString("noiseImplementation");
 
-        System.out.println("RWG LOADING DATA - NOISE STRING: " + noiseImplementation);
         try {
             this.noiseImplementation = NoiseImplementation.valueOf(noiseImplementation);
         } catch (IllegalArgumentException e) {
@@ -38,8 +37,6 @@ public class RwgWorldSavedData extends WorldSavedData {
     public void writeToNBT(NBTTagCompound nbtTagCompound) {
         String noiseString = noiseImplementation.toString();
 
-        System.out.println("RWG SAVING DATA DATA - NOISE: " + noiseImplementation);
-        System.out.println("RWG SAVING DATA DATA - NOISE: " + noiseString);
         try {
             nbtTagCompound.setString("noiseImplementation", noiseString);
         } catch (Exception e) {
@@ -67,14 +64,12 @@ public class RwgWorldSavedData extends WorldSavedData {
     public static void setNoiseImplementation(NoiseImplementation ni) {
         loadInstance();
 
-        System.out.println("RWG SETTING NOISE: " + ni);
         INSTANCE.noiseImplementation = ni;
     }
 
     public static NoiseImplementation getNoiseImplementation() {
         loadInstance();
         if (INSTANCE == null) {
-            System.out.println("RWG COULD NOT LOAD GENERATION DATA - RETURNING UNKNOWN");
             return NoiseImplementation.UNKNOWN;
         }
 

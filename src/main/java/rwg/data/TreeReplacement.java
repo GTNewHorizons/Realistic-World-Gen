@@ -15,10 +15,8 @@ public class TreeReplacement {
 
     @SubscribeEvent
     public boolean saplingGrowTree(SaplingGrowTreeEvent e) {
-        System.out.println("Zwieber nie gaan stele nu he");
         if (e.world.getWorldInfo().getTerrainType() == RWG.worldtype) {
             int type = e.world.getBlockMetadata(e.x, e.y, e.z);
-            System.out.println("tiepe: " + type);
             if (type == 9) {
                 e.world.setBlock(e.x, e.y, e.z, Blocks.air);
                 (new DecoSmallPine(3 + e.rand.nextInt(3), 5 + e.rand.nextInt(5)))
