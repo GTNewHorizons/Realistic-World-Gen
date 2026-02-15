@@ -56,7 +56,7 @@ public class DecoWildWheat extends WorldGenerator {
             }
         }
 
-        world.setBlock(x, y, z, Blocks.water);
+        world.setBlock(x, y, z, Blocks.water, 0, 0);
         return true;
     }
 }

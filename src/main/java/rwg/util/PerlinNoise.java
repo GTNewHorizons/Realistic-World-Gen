@@ -50,8 +50,8 @@ public class PerlinNoise implements NoiseGenerator {
     /** P array for perline 1 noise */
     private int[] p;
 
-    private float[][] g3;
-    private float[][] g2;
+    private float[] g3;
+    private float[] g2;
     private float[] g1;
 
     /**
@@ -97,14 +97,17 @@ public class PerlinNoise implements NoiseGenerator {
     @java.lang.Override
     public double improvedNoise(double x, double y, double z) {
         // Constraint the point to a unit cube
-        int uc_x = (int) Math.floor(x) & 255;
-        int uc_y = (int) Math.floor(y) & 255;
-        int uc_z = (int) Math.floor(z) & 255;
+        double fx = Math.floor(x);
+        double fy = Math.floor(y);
+        double fz = Math.floor(z);
+        int uc_x = (int) fx & 255;
+        int uc_y = (int) fy & 255;
+        int uc_z = (int) fz & 255;
 
         // Relative location of the point in the unit cube
-        double xo = x - Math.floor(x);
-        double yo = y - Math.floor(y);
-        double zo = z - Math.floor(z);
+        double xo = x - fx;
+        double yo = y - fy;
+        double zo = z - fz;
 
         // Fade curves for x, y and z
         double u = fade(xo);
@@ -191,16 +194,12 @@ public class PerlinNoise implements NoiseGenerator {
         float sx = sCurve(rx0);
         float sy = sCurve(ry0);
 
-        float[] q = g2[b00];
-        float u = rx0 * q[0] + ry0 * q[1];
-        q = g2[b10];
-        float v = rx1 * q[0] + ry0 * q[1];
+        float u = rx0 * g2[b00 * 2] + ry0 * g2[b00 * 2 + 1];
+        float v = rx1 * g2[b10 * 2] + ry0 * g2[b10 * 2 + 1];
         float a = lerp(sx, u, v);
 
-        q = g2[b01];
-        u = rx0 * q[0] + ry1 * q[1];
-        q = g2[b11];
-        v = rx1 * q[0] + ry1 * q[1];
+        u = rx0 * g2[b01 * 2] + ry1 * g2[b01 * 2 + 1];
+        v = rx1 * g2[b11 * 2] + ry1 * g2[b11 * 2 + 1];
         float b = lerp(sx, u, v);
 
         return lerp(sy, a, b);
@@ -249,30 +248,31 @@ public class PerlinNoise implements NoiseGenerator {
         float sy = sCurve(ry0);
         float sz = sCurve(rz0);
 
-        float[] q = g3[b00 + bz0];
-        float u = (rx0 * q[0] + ry0 * q[1] + rz0 * q[2]);
-        q = g3[b10 + bz0];
-        float v = (rx1 * q[0] + ry0 * q[1] + rz0 * q[2]);
+        int gi;
+        gi = (b00 + bz0) * 3;
+        float u = (rx0 * g3[gi] + ry0 * g3[gi + 1] + rz0 * g3[gi + 2]);
+        gi = (b10 + bz0) * 3;
+        float v = (rx1 * g3[gi] + ry0 * g3[gi + 1] + rz0 * g3[gi + 2]);
         float a = lerp(t, u, v);
 
-        q = g3[b01 + bz0];
-        u = (rx0 * q[0] + ry1 * q[1] + rz0 * q[2]);
-        q = g3[b11 + bz0];
-        v = (rx1 * q[0] + ry1 * q[1] + rz0 * q[2]);
+        gi = (b01 + bz0) * 3;
+        u = (rx0 * g3[gi] + ry1 * g3[gi + 1] + rz0 * g3[gi + 2]);
+        gi = (b11 + bz0) * 3;
+        v = (rx1 * g3[gi] + ry1 * g3[gi + 1] + rz0 * g3[gi + 2]);
         float b = lerp(t, u, v);
 
         float c = lerp(sy, a, b);
 
-        q = g3[b00 + bz1];
-        u = (rx0 * q[0] + ry0 * q[1] + rz1 * q[2]);
-        q = g3[b10 + bz1];
-        v = (rx1 * q[0] + ry0 * q[1] + rz1 * q[2]);
+        gi = (b00 + bz1) * 3;
+        u = (rx0 * g3[gi] + ry0 * g3[gi + 1] + rz1 * g3[gi + 2]);
+        gi = (b10 + bz1) * 3;
+        v = (rx1 * g3[gi] + ry0 * g3[gi + 1] + rz1 * g3[gi + 2]);
         a = lerp(t, u, v);
 
-        q = g3[b01 + bz1];
-        u = (rx0 * q[0] + ry1 * q[1] + rz1 * q[2]);
-        q = g3[b11 + bz1];
-        v = (rx1 * q[0] + ry1 * q[1] + rz1 * q[2]);
+        gi = (b01 + bz1) * 3;
+        u = (rx0 * g3[gi] + ry1 * g3[gi + 1] + rz1 * g3[gi + 2]);
+        gi = (b11 + bz1) * 3;
+        v = (rx1 * g3[gi] + ry1 * g3[gi + 1] + rz1 * g3[gi + 2]);
         b = lerp(t, u, v);
 
         float d = lerp(sy, a, b);
@@ -504,20 +504,20 @@ public class PerlinNoise implements NoiseGenerator {
     /**
      * 2D-vector normalisation function.
      */
-    private void normalize2(float[] v) {
-        float s = (float) (1 / Math.sqrt(v[0] * v[0] + v[1] * v[1]));
-        v[0] *= s;
-        v[1] *= s;
+    private void normalize2(float[] v, int off) {
+        float s = (float) (1 / Math.sqrt(v[off] * v[off] + v[off + 1] * v[off + 1]));
+        v[off] *= s;
+        v[off + 1] *= s;
     }
 
     /**
      * 3D-vector normalisation function.
      */
-    private void normalize3(float[] v) {
-        float s = (float) (1 / Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]));
-        v[0] *= s;
-        v[1] *= s;
-        v[2] *= s;
+    private void normalize3(float[] v, int off) {
+        float s = (float) (1 / Math.sqrt(v[off] * v[off] + v[off + 1] * v[off + 1] + v[off + 2] * v[off + 2]));
+        v[off] *= s;
+        v[off + 1] *= s;
+        v[off + 2] *= s;
     }
 
     /**
@@ -525,8 +525,8 @@ public class PerlinNoise implements NoiseGenerator {
      */
     private void initPerlin1() {
         p = new int[B + B + 2];
-        g3 = new float[B + B + 2][3];
-        g2 = new float[B + B + 2][2];
+        g3 = new float[(B + B + 2) * 3];
+        g2 = new float[(B + B + 2) * 2];
         g1 = new float[B + B + 2];
         int i, j, k;
 
@@ -535,11 +535,13 @@ public class PerlinNoise implements NoiseGenerator {
 
             g1[i] = (float) (((rand.nextDouble() * Integer.MAX_VALUE) % (B + B)) - B) / B;
 
-            for (j = 0; j < 2; j++) g2[i][j] = (float) (((rand.nextDouble() * Integer.MAX_VALUE) % (B + B)) - B) / B;
-            normalize2(g2[i]);
+            for (j = 0; j < 2; j++)
+                g2[i * 2 + j] = (float) (((rand.nextDouble() * Integer.MAX_VALUE) % (B + B)) - B) / B;
+            normalize2(g2, i * 2);
 
-            for (j = 0; j < 3; j++) g3[i][j] = (float) (((rand.nextDouble() * Integer.MAX_VALUE) % (B + B)) - B) / B;
-            normalize3(g3[i]);
+            for (j = 0; j < 3; j++)
+                g3[i * 3 + j] = (float) (((rand.nextDouble() * Integer.MAX_VALUE) % (B + B)) - B) / B;
+            normalize3(g3, i * 3);
         }
 
         while (--i > 0) {
@@ -552,8 +554,8 @@ public class PerlinNoise implements NoiseGenerator {
         for (i = 0; i < B + 2; i++) {
             p[B + i] = p[i];
             g1[B + i] = g1[i];
-            for (j = 0; j < 2; j++) g2[B + i][j] = g2[i][j];
-            for (j = 0; j < 3; j++) g3[B + i][j] = g3[i][j];
+            for (j = 0; j < 2; j++) g2[(B + i) * 2 + j] = g2[i * 2 + j];
+            for (j = 0; j < 3; j++) g3[(B + i) * 3 + j] = g3[i * 3 + j];
         }
     }
 }

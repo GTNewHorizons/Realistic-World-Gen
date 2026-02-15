@@ -33,12 +33,12 @@ public class DecoCacti extends WorldGenerator {
                 if (b == Blocks.sand || (!sand && (b == Blocks.grass || b == Blocks.dirt))) {
                     int l1 = 1 + rand.nextInt(rand.nextInt(3) + 1);
                     if (b == Blocks.grass || b == Blocks.dirt) {
-                        world.setBlock(i1, j1 - 1, k1, Blocks.sand, 0, 2);
+                        world.setBlock(i1, j1 - 1, k1, Blocks.sand, 0, 0);
                     }
 
                     for (int i2 = 0; i2 < l1 + eHeight; ++i2) {
                         if (Blocks.cactus.canBlockStay(world, i1, j1 + i2, k1)) {
-                            world.setBlock(i1, j1 + i2, k1, Blocks.cactus, 0, 2);
+                            world.setBlock(i1, j1 + i2, k1, Blocks.cactus, 0, 0);
                         }
                     }
                 }

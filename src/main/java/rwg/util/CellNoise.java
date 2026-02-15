@@ -28,10 +28,12 @@ public class CellNoise {
     private boolean useDistance = false;
 
     private long seed;
+    private long seedOffset;
     private short distanceMethod;
 
     public CellNoise(long seed, short distanceMethod) {
         this.seed = seed;
+        this.seedOffset = new Random(seed).nextLong();
         this.distanceMethod = distanceMethod;
     }
 
@@ -85,6 +87,7 @@ public class CellNoise {
 
     public void setSeed(long seed) {
         this.seed = seed;
+        this.seedOffset = new Random(seed).nextLong();
     }
 
     public float noise(double x, double z, double frequency) {
@@ -103,7 +106,7 @@ public class CellNoise {
             for (int xCur = xInt - 2; xCur <= xInt + 2; xCur++) {
 
                 double xPos = xCur + valueNoise2D(xCur, zCur, seed);
-                double zPos = zCur + valueNoise2D(xCur, zCur, new Random(seed).nextLong());
+                double zPos = zCur + valueNoise2D(xCur, zCur, seedOffset);
                 double xDist = xPos - x;
                 double zDist = zPos - z;
                 double dist = xDist * xDist + zDist * zDist;
@@ -143,7 +146,7 @@ public class CellNoise {
         for (int zCur = zInt - 2; zCur <= zInt + 2; zCur++) {
             for (int xCur = xInt - 2; xCur <= xInt + 2; xCur++) {
                 xPos = xCur + valueNoise2D(xCur, zCur, seed);
-                zPos = zCur + valueNoise2D(xCur, zCur, new Random(seed).nextLong());
+                zPos = zCur + valueNoise2D(xCur, zCur, seedOffset);
                 xDist = xPos - x;
                 zDist = zPos - z;
                 dist = distance(xPos - x, zPos - z);
@@ -197,7 +200,7 @@ public class CellNoise {
             for (int xCur = xInt - 2; xCur <= xInt + 2; xCur++) {
 
                 double xPos = xCur + valueNoise2D(xCur, zCur, seed);
-                double zPos = zCur + valueNoise2D(xCur, zCur, new Random(seed).nextLong());
+                double zPos = zCur + valueNoise2D(xCur, zCur, seedOffset);
                 double xDist = xPos - x;
                 double zDist = zPos - z;
                 // double dist = xDist * xDist + zDist * zDist;

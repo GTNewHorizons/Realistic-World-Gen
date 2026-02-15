@@ -46,7 +46,7 @@ public class DecoPalm extends WorldGenerator {
         float velZ = (float) Math.sin(horDir * Math.PI / 180D) * verDir;
 
         while (c < length) {
-            world.setBlock((int) posX, (int) posY, (int) posZ, Blocks.log, 15, 2);
+            world.setBlock((int) posX, (int) posY, (int) posZ, Blocks.log, 15, 0);
 
             if (c < length - 3) {
                 loss = Math.abs(velX) + Math.abs(velZ);
@@ -66,7 +66,7 @@ public class DecoPalm extends WorldGenerator {
         z = (int) posZ;
 
         for (int j = 0; j < leavesLength; j += 3) {
-            world.setBlock(x + leaves[j], y + leaves[j + 1], z + leaves[j + 2], Blocks.leaves, 3, 2);
+            world.setBlock(x + leaves[j], y + leaves[j + 1], z + leaves[j + 2], Blocks.leaves, 3, 0);
         }
 
         for (int k = 0; k < cocoasLength; k += 4) {

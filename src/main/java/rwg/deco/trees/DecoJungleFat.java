@@ -66,8 +66,8 @@ public class DecoJungleFat extends WorldGenerator {
         }
 
         for (int i = y + root - 2; i < y + base + 2; i++) {
-            world.setBlock(x, i, z, blockLog, metadataLog, 2);
-            world.setBlock(x + 1, i, z + 1, blockLog, metadataLog, 2);
+            world.setBlock(x, i, z, blockLog, metadataLog, 0);
+            world.setBlock(x + 1, i, z + 1, blockLog, metadataLog, 0);
         }
 
         float horDir, verDir;
@@ -122,7 +122,7 @@ public class DecoJungleFat extends WorldGenerator {
         float velZ = (float) Math.sin(horDir * Math.PI / 180D) * verDir;
 
         while (c < length) {
-            world.setBlock((int) x, (int) y, (int) z, blockLog, metadataLog, 2);
+            world.setBlock((int) x, (int) y, (int) z, blockLog, metadataLog, 0);
 
             x += velX;
             y += velY;
@@ -141,10 +141,10 @@ public class DecoJungleFat extends WorldGenerator {
                     dist = Math.abs((float) i / width) + (float) Math.abs(j) + Math.abs((float) k / width);
                     if (dist <= size - 0.5f || (dist <= size && rand.nextBoolean())) {
                         if (dist < 1.3f) {
-                            world.setBlock((int) x + i, (int) y + j, (int) z + k, blockLog, metadataLog, 2);
+                            world.setBlock((int) x + i, (int) y + j, (int) z + k, blockLog, metadataLog, 0);
                         }
                         if (world.isAirBlock((int) x + i, (int) y + j, (int) z + k)) {
-                            world.setBlock((int) x + i, (int) y + j, (int) z + k, blockLeaves, metadataLeaves, 2);
+                            world.setBlock((int) x + i, (int) y + j, (int) z + k, blockLeaves, metadataLeaves, 0);
                         }
                     }
                 }

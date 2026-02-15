@@ -50,7 +50,7 @@ public class DecoJungleCane extends WorldGenerator {
                 for (int k = 0; k < ra; k++) {
                     b = world.getBlock(sx, y + 1 + k, sz);
                     if (b.getMaterial() == Material.air || b.getMaterial() == Material.vine) {
-                        world.setBlock(sx, y + 1 + k, sz, Blocks.reeds, 0, 2);
+                        world.setBlock(sx, y + 1 + k, sz, Blocks.reeds, 0, 0);
                     } else {
                         break;
                     }
@@ -58,7 +58,7 @@ public class DecoJungleCane extends WorldGenerator {
             }
         }
 
-        world.setBlock(x, y, z, Blocks.water);
+        world.setBlock(x, y, z, Blocks.water, 0, 0);
 
         return true;
     }

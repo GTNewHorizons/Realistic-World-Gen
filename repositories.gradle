@@ -12,4 +12,5 @@ repositories {
             includeGroup 'curse.maven'
         }
     }
+    mavenLocal()
 }

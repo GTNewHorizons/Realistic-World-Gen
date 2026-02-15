@@ -222,12 +222,11 @@ public class ChunkManagerRealistic extends WorldChunkManager {
          */
 
         long coords = ChunkCoordIntPair.chunkXZ2Int(par1, par2);
+        RealisticBiomeBase output = biomeDataMap.get(coords);
 
-        if (biomeDataMap.containsKey(coords)) {
-            return biomeDataMap.get(coords);
+        if (output != null) {
+            return output;
         }
-
-        RealisticBiomeBase output = null;
 
         float b = (biomecell.noise((par1 + 4000f) / 1200D, par2 / 1200D, 1D) * 0.5f) + 0.5f;
         b = b < 0f ? 0f : b >= 0.9999999f ? 0.9999999f : b;

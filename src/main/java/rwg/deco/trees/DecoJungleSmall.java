@@ -65,7 +65,7 @@ public class DecoJungleSmall extends WorldGenerator {
         }
 
         for (int i = y + root; i < y + base; i++) {
-            world.setBlock(x, i, z, blockLog, metadataLog, 2);
+            world.setBlock(x, i, z, blockLog, metadataLog, 0);
         }
 
         float horDir, verDir;
@@ -107,7 +107,7 @@ public class DecoJungleSmall extends WorldGenerator {
         float velZ = (float) Math.sin(horDir * Math.PI / 180D) * verDir;
 
         while (c < length) {
-            world.setBlock((int) x, (int) y, (int) z, blockLog, metadataLog, 2);
+            world.setBlock((int) x, (int) y, (int) z, blockLog, metadataLog, 0);
 
             x += velX;
             y += velY;
@@ -126,10 +126,10 @@ public class DecoJungleSmall extends WorldGenerator {
                     dist = Math.abs((float) i / width) + (float) Math.abs(j) + Math.abs((float) k / width);
                     if (dist <= size - 0.5f || (dist <= size && rand.nextBoolean())) {
                         if (dist < 0.6f) {
-                            world.setBlock(x + i, y + j, z + k, blockLog, metadataLog, 2);
+                            world.setBlock(x + i, y + j, z + k, blockLog, metadataLog, 0);
                         }
                         if (world.isAirBlock(x + i, y + j, z + k)) {
-                            world.setBlock(x + i, y + j, z + k, blockLeaves, metadataLeaves, 2);
+                            world.setBlock(x + i, y + j, z + k, blockLeaves, metadataLeaves, 0);
                         }
                     }
                 }
