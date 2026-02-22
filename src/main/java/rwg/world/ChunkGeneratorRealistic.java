@@ -49,21 +49,21 @@ import rwg.util.NoiseSelector;
 
 public class ChunkGeneratorRealistic implements IChunkProvider {
 
-    private Random rand;
-    private Random mapRand;
+    private final Random rand;
+    private final Random mapRand;
 
-    private World worldObj;
-    private ChunkManagerRealistic cmr;
+    private final World worldObj;
+    private final ChunkManagerRealistic cmr;
     private final MapGenBase caves;
     private final MapGenStronghold strongholdGenerator;
     private final MapGenMineshaft mineshaftGenerator;
     private final MapGenVillage villageGenerator;
 
-    private NoiseGenerator perlin;
-    private CellNoise cell;
+    private final NoiseGenerator perlin;
+    private final CellNoise cell;
 
-    private RealisticBiomeBase[] biomesForGeneration;
-    private BiomeGenBase[] baseBiomesList;
+    private final RealisticBiomeBase[] biomesForGeneration;
+    private final BiomeGenBase[] baseBiomesList;
 
     private final int sampleSize = 8;
     private final int sampleArraySize;
@@ -76,24 +76,24 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
     private final byte[] chunkMetadata = new byte[65536];
     private final float[][] mix4Src = new float[4][];
 
-    private int[] biomeData;
-    private float[][] hugeRender;
-    private float[][] smallRender;
-    private float[] testHeight;
-    private float[] riverStrength;
-    private float[] mapGenBiomes;
-    private float[] borderNoise;
+    private final int[] biomeData;
+    private final float[][] hugeRender;
+    private final float[][] smallRender;
+    private final float[] testHeight;
+    private final float[] riverStrength;
+    private final float[] mapGenBiomes;
+    private final float[] borderNoise;
 
-    private long worldSeed;
+    private final long worldSeed;
 
-    private WorldGenMinable ore_dirt = new WorldGenMinable(Blocks.dirt, 32);
-    private WorldGenMinable ore_gravel = new WorldGenMinable(Blocks.gravel, 32);
-    private WorldGenMinable ore_coal = new WorldGenMinable(Blocks.coal_ore, 16);
-    private WorldGenMinable ore_iron = new WorldGenMinable(Blocks.iron_ore, 8);
-    private WorldGenMinable ore_gold = new WorldGenMinable(Blocks.gold_ore, 8);
-    private WorldGenMinable ore_redstone = new WorldGenMinable(Blocks.redstone_ore, 7);
-    private WorldGenMinable ore_diamond = new WorldGenMinable(Blocks.diamond_ore, 7);
-    private WorldGenMinable ore_lapis = new WorldGenMinable(Blocks.lapis_ore, 6);
+    private final WorldGenMinable ore_dirt = new WorldGenMinable(Blocks.dirt, 32);
+    private final WorldGenMinable ore_gravel = new WorldGenMinable(Blocks.gravel, 32);
+    private final WorldGenMinable ore_coal = new WorldGenMinable(Blocks.coal_ore, 16);
+    private final WorldGenMinable ore_iron = new WorldGenMinable(Blocks.iron_ore, 8);
+    private final WorldGenMinable ore_gold = new WorldGenMinable(Blocks.gold_ore, 8);
+    private final WorldGenMinable ore_redstone = new WorldGenMinable(Blocks.redstone_ore, 7);
+    private final WorldGenMinable ore_diamond = new WorldGenMinable(Blocks.diamond_ore, 7);
+    private final WorldGenMinable ore_lapis = new WorldGenMinable(Blocks.lapis_ore, 6);
 
     private final WorldGenLakes gen_lakes_water = new WorldGenLakes(Blocks.water);
     private final WorldGenLakes gen_lakes_lava = new WorldGenLakes(Blocks.lava);
@@ -117,7 +117,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
         mapRand = new Random(l);
         worldSeed = l;
 
-        Map m = new HashMap();
+        Map<String, String> m = new HashMap<>();
         m.put("size", "0");
         m.put("distance", "24");
         villageGenerator = (MapGenVillage) TerrainGen.getModdedMapGen(new MapGenVillage(m), VILLAGE);
