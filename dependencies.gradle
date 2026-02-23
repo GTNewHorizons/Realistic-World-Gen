@@ -3,9 +3,6 @@
 dependencies {
     runtimeOnlyNonPublishable rfg.deobf("curse.maven:journeymap-32274:4500658")
     compile("com.github.GTNewHorizons:NotEnoughItems:2.8.68-GTNH:dev")
-//    api("com.github.GTNewHorizons:Hodgepodge:2.7.59:dev")
-//    api("com.github.GTNewHorizons:Draconic-Evolution:1.5.16-GTNH:dev")
-//    api("com.github.GTNewHorizons:Angelica:2.0.0-alpha20:dev")
 
     devOnlyNonPublishable rfg.deobf('curse.maven:biomes-o-plenty-220318:2499612')
     compileOnly('curse.maven:extrabiomesxl-60041:2273301')
