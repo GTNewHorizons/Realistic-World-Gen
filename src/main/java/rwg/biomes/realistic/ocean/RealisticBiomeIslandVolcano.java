@@ -21,11 +21,17 @@ public class RealisticBiomeIslandVolcano extends RealisticBiomeBase {
 
     private static final float CRATER_RADIUS = 26f;
     private static final float LAVA_FILL_RADIUS = 37.5f;
+    private static final float FULL_UNDERLYING_INFLUENCE_RADIUS = 70f;
     private static final float RIM_RADIUS = 44f;
-    private static final float OUTER_SLOPE_WIDTH = 66f;
+    private static final float OUTER_SLOPE_WIDTH = 86f;
     private static final float CRATER_FLOOR_OFFSET = 4f;
     private static final float LAVA_LEVEL_OFFSET = 18f;
-    private static final float RIM_HEIGHT_OFFSET = 33f;
+    private static final float RIM_HEIGHT_OFFSET = 27f;
+    private static final float TERRAIN_HEIGHT_RELIEF_FACTOR = .35f;
+    private static final float MIN_RIM_HEIGHT_OFFSET = 24f;
+    private static final float MAX_RIM_HEIGHT_OFFSET = 48f;
+    private static final float SUMMIT_NOISE_ALLOWANCE = 2f;
+    private static final float MAX_SAFE_SUMMIT_Y = 250f;
     private static final int VENT_RADIUS = 5;
     private static final int VENT_SHELL_RADIUS = 10;
     private static final int CHAMBER_CENTER_Y = 18;
@@ -57,20 +63,40 @@ public class RealisticBiomeIslandVolcano extends RealisticBiomeBase {
         float footBlend = smoothstep((distance - RIM_RADIUS) / OUTER_SLOPE_WIDTH);
         float localBaseHeight = baseHeight + (underlyingHeight - baseHeight) * footBlend;
         float structureStrength = 1f - footBlend;
+        float rimHeightOffset = getRimHeightOffset(baseHeight);
 
         float height;
         if (distance < CRATER_RADIUS) {
             height = localBaseHeight + CRATER_FLOOR_OFFSET + perlin.noise2(localX / 9f, localZ / 9f) * 1.5f;
         } else if (distance < RIM_RADIUS) {
             float rim = (distance - CRATER_RADIUS) / (RIM_RADIUS - CRATER_RADIUS);
-            height = localBaseHeight + CRATER_FLOOR_OFFSET + rim * (RIM_HEIGHT_OFFSET - CRATER_FLOOR_OFFSET);
+            height = localBaseHeight + CRATER_FLOOR_OFFSET + rim * (rimHeightOffset - CRATER_FLOOR_OFFSET);
         } else {
             float slope = Math.max(0f, 1f - (distance - RIM_RADIUS) / OUTER_SLOPE_WIDTH);
-            height = localBaseHeight + slope * RIM_HEIGHT_OFFSET;
+            height = localBaseHeight + slope * rimHeightOffset;
         }
 
         float volcanoHeight = height + perlin.noise2(localX / 24f, localZ / 24f) * 2f * structureStrength;
-        return Math.max(underlyingHeight, volcanoHeight);
+        float underlyingInfluence = smoothstep(
+                (distance - LAVA_FILL_RADIUS) / (FULL_UNDERLYING_INFLUENCE_RADIUS - LAVA_FILL_RADIUS));
+        return volcanoHeight + Math.max(0f, underlyingHeight - volcanoHeight) * underlyingInfluence;
+    }
+
+    private static float getRimHeightOffset(float baseHeight) {
+        return Math.max(
+                MIN_RIM_HEIGHT_OFFSET,
+                Math.min(MAX_RIM_HEIGHT_OFFSET, RIM_HEIGHT_OFFSET + (baseHeight - 63f) * TERRAIN_HEIGHT_RELIEF_FACTOR));
+    }
+
+    /** Rejects the entire feature rather than flattening a summit against Minecraft's build ceiling. */
+    public boolean canGenerateAtHeight(float baseHeight) {
+        return baseHeight + getRimHeightOffset(baseHeight) + SUMMIT_NOISE_ALLOWANCE <= MAX_SAFE_SUMMIT_Y;
+    }
+
+    public boolean isInsideLavaFill(NoiseGenerator perlin, float localX, float localZ) {
+        float distance = (float) Math.sqrt((double) localX * localX + (double) localZ * localZ);
+        distance += perlin.noise2(localX / 18f, localZ / 18f) * 3f;
+        return distance < LAVA_FILL_RADIUS;
     }
 
     private static float smoothstep(float value) {
@@ -134,8 +160,47 @@ public class RealisticBiomeIslandVolcano extends RealisticBiomeBase {
     public void rReplaceAt(Block[] blocks, byte[] metadata, int i, int j, int x, int y, int depth, World world,
             Random rand, NoiseGenerator perlin, CellNoise cell, float[] noise, float river, BiomeGenBase[] base,
             float localX, float localZ, float baseHeight, float underlyingHeight) {
-        if (rNoiseAt(perlin, localX, localZ, baseHeight, underlyingHeight) <= underlyingHeight) return;
-        surface.paintTerrain(blocks, metadata, i, j, x, y, depth, world, rand, perlin, cell, noise, river, base);
+        rReplaceAt(
+                blocks,
+                metadata,
+                i,
+                j,
+                x,
+                y,
+                depth,
+                world,
+                rand,
+                perlin,
+                cell,
+                noise,
+                river,
+                base,
+                localX,
+                localZ,
+                baseHeight,
+                underlyingHeight,
+                6);
+    }
+
+    public void rReplaceAt(Block[] blocks, byte[] metadata, int i, int j, int x, int y, int depth, World world,
+            Random rand, NoiseGenerator perlin, CellNoise cell, float[] noise, float river, BiomeGenBase[] base,
+            float localX, float localZ, float baseHeight, float underlyingHeight, int surfaceDepth) {
+        ((SurfaceVolcanoAsh) surface).paintTerrain(
+                blocks,
+                metadata,
+                i,
+                j,
+                x,
+                y,
+                depth,
+                world,
+                rand,
+                perlin,
+                cell,
+                noise,
+                river,
+                base,
+                surfaceDepth);
 
         float distance = (float) Math.sqrt((double) localX * localX + (double) localZ * localZ);
         distance += perlin.noise2(localX / 18f, localZ / 18f) * 3f;

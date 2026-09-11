@@ -177,7 +177,8 @@ public class SupportEBXL {
                                     BiomeManager.greenswamp.get().fillerBlock,
                                     Blocks.stone,
                                     Blocks.cobblestone)),
-                    BiomeCategory.WET);
+                    BiomeCategory.WET,
+                    BiomePlacement.LITTORAL);
         }
 
         // MARSH
@@ -192,7 +193,8 @@ public class SupportEBXL {
                                     BiomeManager.marsh.get().fillerBlock,
                                     Blocks.stone,
                                     Blocks.cobblestone)),
-                    BiomeCategory.WET);
+                    BiomeCategory.WET,
+                    BiomePlacement.LITTORAL);
         }
 
         // MEADOW

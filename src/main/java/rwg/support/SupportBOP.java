@@ -5,8 +5,8 @@ import net.minecraft.init.Blocks;
 import biomesoplenty.api.content.BOPCBiomes;
 import biomesoplenty.api.content.BOPCBlocks;
 import rwg.api.RWGBiomes;
+import rwg.biomes.realistic.ocean.RealisticBiomeBOPOcean;
 import rwg.biomes.realistic.ocean.RealisticBiomeIslandVolcano;
-import rwg.biomes.realistic.ocean.RealisticBiomeOcean;
 import rwg.biomes.realistic.support.RealisticBiomeFungiCanyonIsland;
 import rwg.support.Support.BiomeCategory;
 import rwg.support.Support.BiomePlacement;
@@ -35,17 +35,13 @@ public class SupportBOP {
 
     public static void init() {
         if (BOPCBiomes.kelpForest != null) {
-            Support.oceanShallowKelp = new RealisticBiomeOcean(
+            Support.oceanShallowKelp = new RealisticBiomeBOPOcean(
                     BOPCBiomes.kelpForest,
-                    true,
-                    true,
                     "RealisticBiomeOceanKelpForest");
         }
         if (BOPCBiomes.coralReef != null) {
-            Support.oceanShallowCoral = new RealisticBiomeOcean(
+            Support.oceanShallowCoral = new RealisticBiomeBOPOcean(
                     BOPCBiomes.coralReef,
-                    true,
-                    true,
                     "RealisticBiomeOceanCoralReef");
         }
         // VOLCANO ISLAND
@@ -91,7 +87,8 @@ public class SupportBOP {
                                 BOPCBiomes.bayou.fillerBlock,
                                 Blocks.stone,
                                 Blocks.cobblestone)),
-                BiomeCategory.WET);
+                BiomeCategory.WET,
+                BiomePlacement.LITTORAL);
 
         // BOG
         Support.addBiome(
@@ -261,7 +258,8 @@ public class SupportBOP {
                                 BOPCBiomes.deadSwamp.fillerBlock,
                                 Blocks.stone,
                                 Blocks.cobblestone)),
-                BiomeCategory.WET);
+                BiomeCategory.WET,
+                BiomePlacement.LITTORAL);
 
         // DECIDUOUS FOREST
         Support.addBiome(
@@ -368,7 +366,8 @@ public class SupportBOP {
                                 130f,
                                 50f,
                                 1.5f)),
-                BiomeCategory.COLD);
+                BiomeCategory.COLD,
+                BiomePlacement.SMALL_ISLAND);
 
         // GRASSLAND
         /*
@@ -501,7 +500,8 @@ public class SupportBOP {
                                 BOPCBiomes.lushSwamp.fillerBlock,
                                 Blocks.stone,
                                 Blocks.cobblestone)),
-                BiomeCategory.WET);
+                BiomeCategory.WET,
+                BiomePlacement.LITTORAL);
 
         // MAPLE WOODS
         Support.addBiome(
@@ -534,7 +534,8 @@ public class SupportBOP {
                                 BOPCBiomes.mangrove.fillerBlock,
                                 Blocks.stone,
                                 Blocks.cobblestone)),
-                BiomeCategory.WET);
+                BiomeCategory.WET,
+                BiomePlacement.LITTORAL);
 
         // MEADOW
         Support.addBiome(
@@ -552,11 +553,17 @@ public class SupportBOP {
                 BiomePlacement.COLD_BORDER);
 
         // MOOR
-        /*
-         * Support.biomes_wet.add( new RealisticBiomeSupport( BOPCBiomes.moor, new TerrainHighland(0f, 70f, 68f, 200f),
-         * new SurfaceGrassland(BOPCBiomes.moor.topBlock, BOPCBiomes.moor.fillerBlock, Blocks.stone, Blocks.cobblestone)
-         * ) );
-         */
+        Support.addBiome(
+                new RealisticBiomeSupport(
+                        BOPCBiomes.moor,
+                        RWGBiomes.baseRiverWet,
+                        new TerrainMountainRiver(),
+                        new SurfaceGrassland(
+                                BOPCBiomes.moor.topBlock,
+                                BOPCBiomes.moor.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.WET);
 
         // MOUNTAIN
         Support.addBiome(
@@ -573,11 +580,18 @@ public class SupportBOP {
                 BiomeCategory.HOT);
 
         // OMINOUS WOODS
-        /*
-         * Support.biomes_cold.add( new RealisticBiomeSupport( BOPCBiomes.ominousWoods, new TerrainHighland(0f, 140f,
-         * 68f, 200f), new SurfaceGrassland(BOPCBiomes.ominousWoods.topBlock, BOPCBiomes.ominousWoods.fillerBlock,
-         * Blocks.stone, Blocks.cobblestone) ) );
-         */
+        Support.addBiome(
+                new RealisticBiomeSupport(
+                        BOPCBiomes.ominousWoods,
+                        RWGBiomes.baseRiverCold,
+                        new TerrainHilly(230f, 120f, 0f),
+                        new SurfaceGrassland(
+                                BOPCBiomes.ominousWoods.topBlock,
+                                BOPCBiomes.ominousWoods.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.SNOW,
+                BiomePlacement.SMALL_ISLAND);
 
         // ORCHARD
 
@@ -625,6 +639,20 @@ public class SupportBOP {
                                 1.3f)),
                 BiomeCategory.WET,
                 BiomePlacement.COLD_BORDER);
+
+        // QUAGMIRE
+        Support.addBiome(
+                new RealisticBiomeSupport(
+                        BOPCBiomes.quagmire,
+                        RWGBiomes.baseRiverWet,
+                        new TerrainMarsh(),
+                        new SurfaceGrassland(
+                                BOPCBiomes.quagmire.topBlock,
+                                BOPCBiomes.quagmire.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.WET,
+                BiomePlacement.SMALL);
 
         // REDWOOD FOREST
         Support.addBiome(
@@ -703,7 +731,8 @@ public class SupportBOP {
                                 BOPCBiomes.sludgepit.fillerBlock,
                                 Blocks.stone,
                                 Blocks.cobblestone)),
-                BiomeCategory.WET);
+                BiomeCategory.WET,
+                BiomePlacement.LITTORAL);
 
         // STEPPE
         /*
@@ -758,7 +787,72 @@ public class SupportBOP {
                                 BOPCBiomes.tropics.fillerBlock,
                                 Blocks.stone,
                                 Blocks.cobblestone)),
-                BiomeCategory.WET);
+                BiomeCategory.WET,
+                BiomePlacement.LITTORAL);
+        Support.addBiome(
+                new RealisticBiomeSupport(
+                        BOPCBiomes.tropics,
+                        RWGBiomes.baseRiverWet,
+                        new TerrainMarsh(),
+                        new SurfaceGrassland(
+                                BOPCBiomes.tropics.topBlock,
+                                BOPCBiomes.tropics.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.WET,
+                BiomePlacement.SMALL_ISLAND);
+        Support.addBiome(
+                new RealisticBiomeSupport(
+                        BOPCBiomes.tropics,
+                        RWGBiomes.baseRiverHot,
+                        new TerrainMarsh(),
+                        new SurfaceGrassland(
+                                BOPCBiomes.tropics.topBlock,
+                                BOPCBiomes.tropics.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.HOT,
+                BiomePlacement.SMALL_ISLAND);
+        Support.addBiome(
+                new RealisticBiomeSupport(
+                        BOPCBiomes.tropics,
+                        RWGBiomes.baseRiverHot,
+                        new TerrainMarsh(),
+                        new SurfaceGrassland(
+                                BOPCBiomes.tropics.topBlock,
+                                BOPCBiomes.tropics.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.HOT,
+                BiomePlacement.SMALL);
+
+        // OASIS
+        Support.addBiome(
+                new RealisticBiomeSupport(
+                        BOPCBiomes.oasis,
+                        RWGBiomes.baseRiverHot,
+                        new TerrainMarsh(),
+                        new SurfaceGrassland(
+                                BOPCBiomes.oasis.topBlock,
+                                BOPCBiomes.oasis.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.HOT,
+                BiomePlacement.SMALL);
+
+        // CORRUPTED SANDS
+        Support.addBiome(
+                new RealisticBiomeSupport(
+                        BOPCBiomes.corruptedSands,
+                        RWGBiomes.baseRiverHot,
+                        new TerrainSwampMountain(135f, 300f),
+                        new SurfaceGrassland(
+                                BOPCBiomes.corruptedSands.topBlock,
+                                BOPCBiomes.corruptedSands.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.HOT,
+                BiomePlacement.SMALL_ISLAND);
 
         // TUNDRA
         Support.addBiome(
@@ -791,7 +885,8 @@ public class SupportBOP {
                                 BOPCBiomes.wetland.fillerBlock,
                                 Blocks.stone,
                                 Blocks.cobblestone)),
-                BiomeCategory.WET);
+                BiomeCategory.WET,
+                BiomePlacement.LITTORAL);
 
         // WOODLAND
         Support.addBiome(

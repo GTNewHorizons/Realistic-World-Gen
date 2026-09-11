@@ -46,6 +46,18 @@ public class SupportTC {
                                             b[i].fillerBlock,
                                             Blocks.stone,
                                             Blocks.cobblestone)),
+                            BiomeCategory.SNOW,
+                            BiomePlacement.SMALL_ISLAND);
+                    Support.addBiome(
+                            new RealisticBiomeSupport(
+                                    b[i],
+                                    RWGBiomes.baseRiverCold,
+                                    new TerrainSwampMountain(135f, 300f),
+                                    new SurfaceGrassland(
+                                            b[i].topBlock,
+                                            b[i].fillerBlock,
+                                            Blocks.stone,
+                                            Blocks.cobblestone)),
                             BiomeCategory.COLD,
                             BiomePlacement.SMALL_ISLAND);
                 }

@@ -43,6 +43,7 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     private static final float THREE_CLIMATE_SNOW_LIMIT = .2475f;
     private static final float THREE_CLIMATE_COLD_LIMIT = .62375f;
     private static final double CLIMATE_BORDER_DISTANCE_DIFFERENCE = 288D;
+    private static final float LITTORAL_WIDTH = 432f;
     private static final double SMALL_BIOME_RADIUS = 75D;
 
     private BiomeCache biomeCache;
@@ -91,10 +92,10 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     private ArrayList<RealisticBiomeBase>[] hotBorderBiomes;
     private ArrayList<RealisticBiomeBase>[] veryColdBorderBiomes;
     private ArrayList<RealisticBiomeBase>[] veryHotBorderBiomes;
+    private ArrayList<RealisticBiomeBase>[] littoralBiomes;
     private ArrayList<RealisticBiomeBase>[] smallBiomes;
     private ArrayList<RealisticBiomeBase>[] islandBiomes;
     private ArrayList<RealisticBiomeBase>[] smallIslandBiomes;
-    private ArrayList<RealisticBiomeBase>[] mediumIslandBiomes;
     private ArrayList<RealisticBiomeBase>[] largeIslandBiomes;
     private int biomes_snowLength;
     private int biomes_coldLength;
@@ -137,7 +138,8 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         cell.setUseDistance(true);
         biomecell = new CellNoise(seed, (short) 0);
         climateWarp = NoiseSelector.createNoiseGenerator(seed ^ 0xBB67AE8584CAA73BL);
-        smallBiomePoints = new PoissonPointNoise(seed ^ 0x510E527FADE682D1L, 1610D, 4);
+        // Point density is inversely proportional to spacing squared; 1020 instead of 1610 yields about 2.5x as many.
+        smallBiomePoints = new PoissonPointNoise(seed ^ 0x510E527FADE682D1L, 1020D, 4);
         if (continental) {
             continents = new ContinentalNoise(seed ^ 0x6A09E667F3BCC909L);
         }
@@ -169,6 +171,11 @@ public class ChunkManagerRealistic extends WorldChunkManager {
                 Support.cold.veryHotBorder,
                 Support.hot.veryHotBorder,
                 Support.wet.veryHotBorder);
+        littoralBiomes = lists(
+                Support.snow.littoral,
+                Support.cold.littoral,
+                Support.hot.littoral,
+                Support.wet.littoral);
         smallBiomes = lists(Support.snow.small, Support.cold.small, Support.hot.small, Support.wet.small);
         islandBiomes = lists(Support.snow.island, Support.cold.island, Support.hot.island, Support.wet.island);
         smallIslandBiomes = lists(
@@ -176,11 +183,6 @@ public class ChunkManagerRealistic extends WorldChunkManager {
                 Support.cold.smallIsland,
                 Support.hot.smallIsland,
                 Support.wet.smallIsland);
-        mediumIslandBiomes = lists(
-                Support.snow.mediumIsland,
-                Support.cold.mediumIsland,
-                Support.hot.mediumIsland,
-                Support.wet.mediumIsland);
         largeIslandBiomes = lists(
                 Support.snow.largeIsland,
                 Support.cold.largeIsland,
@@ -289,10 +291,10 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         for (ArrayList<RealisticBiomeBase> list : hotBorderBiomes) result.addAll(list);
         for (ArrayList<RealisticBiomeBase> list : veryColdBorderBiomes) result.addAll(list);
         for (ArrayList<RealisticBiomeBase> list : veryHotBorderBiomes) result.addAll(list);
+        for (ArrayList<RealisticBiomeBase> list : littoralBiomes) result.addAll(list);
         for (ArrayList<RealisticBiomeBase> list : smallBiomes) result.addAll(list);
         for (ArrayList<RealisticBiomeBase> list : islandBiomes) result.addAll(list);
         for (ArrayList<RealisticBiomeBase> list : smallIslandBiomes) result.addAll(list);
-        for (ArrayList<RealisticBiomeBase> list : mediumIslandBiomes) result.addAll(list);
         for (ArrayList<RealisticBiomeBase> list : largeIslandBiomes) result.addAll(list);
         result.add(RealisticBiomeBase.coastIce);
         result.add(RealisticBiomeBase.coastDunes);
@@ -325,10 +327,10 @@ public class ChunkManagerRealistic extends WorldChunkManager {
             setCategory(categories, hotBorderBiomes[index], index + 1);
             setCategory(categories, veryColdBorderBiomes[index], index + 1);
             setCategory(categories, veryHotBorderBiomes[index], index + 1);
+            setCategory(categories, littoralBiomes[index], index + 1);
             setCategory(categories, smallBiomes[index], index + 1);
             setCategory(categories, islandBiomes[index], index + 1);
             setCategory(categories, smallIslandBiomes[index], index + 1);
-            setCategory(categories, mediumIslandBiomes[index], index + 1);
             setCategory(categories, largeIslandBiomes[index], index + 1);
         }
         setCategory(categories, RealisticBiomeBase.coastIce, 1);
@@ -360,13 +362,13 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         int index = metaBiome - 1;
         if (islandBiomes[index].contains(biome)) return BiomePlacement.ISLAND.ordinal();
         if (smallIslandBiomes[index].contains(biome)) return BiomePlacement.SMALL_ISLAND.ordinal();
-        if (mediumIslandBiomes[index].contains(biome)) return BiomePlacement.MEDIUM_ISLAND.ordinal();
         if (largeIslandBiomes[index].contains(biome)) return BiomePlacement.LARGE_ISLAND.ordinal();
         if (smallBiomes[index].contains(biome)) return BiomePlacement.SMALL.ordinal();
         if (coldBorderBiomes[index].contains(biome)) return BiomePlacement.COLD_BORDER.ordinal();
         if (hotBorderBiomes[index].contains(biome)) return BiomePlacement.HOT_BORDER.ordinal();
         if (veryColdBorderBiomes[index].contains(biome)) return BiomePlacement.VERY_COLD_BORDER.ordinal();
         if (veryHotBorderBiomes[index].contains(biome)) return BiomePlacement.VERY_HOT_BORDER.ordinal();
+        if (littoralBiomes[index].contains(biome)) return BiomePlacement.LITTORAL.ordinal();
         if (borderBiomes[index].contains(biome)) return BiomePlacement.BORDER.ordinal();
         return BiomePlacement.CORE.ordinal();
     }
@@ -379,10 +381,10 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         if (placement == BiomePlacement.HOT_BORDER) return hotBorderBiomes[index];
         if (placement == BiomePlacement.VERY_COLD_BORDER) return veryColdBorderBiomes[index];
         if (placement == BiomePlacement.VERY_HOT_BORDER) return veryHotBorderBiomes[index];
+        if (placement == BiomePlacement.LITTORAL) return littoralBiomes[index];
         if (placement == BiomePlacement.SMALL) return smallBiomes[index];
         if (placement == BiomePlacement.ISLAND) return islandBiomes[index];
         if (placement == BiomePlacement.SMALL_ISLAND) return smallIslandBiomes[index];
-        if (placement == BiomePlacement.MEDIUM_ISLAND) return mediumIslandBiomes[index];
         if (placement == BiomePlacement.LARGE_ISLAND) return largeIslandBiomes[index];
         return index == 0 ? biomes_snow : index == 1 ? biomes_cold : index == 2 ? biomes_hot : biomes_wet;
     }
@@ -396,11 +398,21 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     }
 
     public long getVolcanoCoordinates(int x, int y) {
-        return continental ? continents.getVolcanoCoordinates(landmassX(x), landmassZ(y)) : Long.MIN_VALUE;
+        if (!continental) return Long.MIN_VALUE;
+        long coordinates = continents.getVolcanoCoordinates(landmassX(x), landmassZ(y));
+        return coordinates != Long.MIN_VALUE && canGenerateVolcanoAt(x, y) ? coordinates : Long.MIN_VALUE;
     }
 
     public long getVolcanoVicinityCoordinates(int x, int y) {
-        return continental ? continents.getVolcanoVicinityCoordinates(landmassX(x), landmassZ(y)) : Long.MIN_VALUE;
+        if (!continental) return Long.MIN_VALUE;
+        long coordinates = continents.getVolcanoVicinityCoordinates(landmassX(x), landmassZ(y));
+        return coordinates != Long.MIN_VALUE && canGenerateVolcanoAt(x, y) ? coordinates : Long.MIN_VALUE;
+    }
+
+    private boolean canGenerateVolcanoAt(int x, int y) {
+        return Support.volcanoIsland instanceof RealisticBiomeIslandVolcano
+                && ((RealisticBiomeIslandVolcano) Support.volcanoIsland)
+                        .canGenerateAtHeight(getVolcanoBaseHeight(x, y));
     }
 
     /**
@@ -472,13 +484,15 @@ public class ChunkManagerRealistic extends WorldChunkManager {
                 metaBiome = 0;
                 output = getOceanBiome(continent, getClimateAt(par1, par2), par1, par2);
             } else if (Support.volcanoIsland instanceof RealisticBiomeIslandVolcano
-                    && isVolcanoAboveUnderlying(par1, par2)) {
+                    && getVolcanoCoordinates(par1, par2) != Long.MIN_VALUE) {
                         metaBiome = getClimateAt(par1, par2);
                         output = Support.volcanoIsland;
                     } else {
                         int climate = getClimateAt(par1, par2);
                         metaBiome = climate;
                         output = null;
+                        boolean islandBiomeSelected = false;
+                        boolean littoralBiomeSelected = false;
                         int islandTier = continents.getIslandSizeTier(landmassX(par1), landmassZ(par2));
                         if (islandTier >= 0) {
                             long seedCoordinates = continents
@@ -487,10 +501,23 @@ public class ChunkManagerRealistic extends WorldChunkManager {
                             int seedY = (int) seedCoordinates;
                             int islandClimate = getClimateAt(seedX, seedY);
                             output = selectIslandBiome(islandTier, islandClimate, seedX, seedY);
-                            if (output != null) metaBiome = islandClimate;
+                            if (output != null) {
+                                metaBiome = islandClimate;
+                                islandBiomeSelected = true;
+                            }
                         }
-                        if (output == null) output = getLandBiomeAt(par1, par2, climate);
-                        if (continent < 24f) {
+                        if (output == null) {
+                            output = getLandBiomeAt(par1, par2, climate);
+                            if (continent < LITTORAL_WIDTH && !littoralBiomes[climate - 1].isEmpty()) {
+                                output = selectBiome(
+                                        littoralBiomes[climate - 1],
+                                        littoralBiomes[climate - 1].size(),
+                                        biomeX(par1),
+                                        biomeZ(par2));
+                                littoralBiomeSelected = true;
+                            }
+                        }
+                        if (!islandBiomeSelected && !littoralBiomeSelected && continent < 24f) {
                             output = output.baseBiome.temperature < 0.15f ? RealisticBiomeBase.coastIce
                                     : RealisticBiomeBase.coastDunes;
                         }
@@ -519,10 +546,11 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         int centerY = (int) centerCoordinates - ConfigRWG.landmassOffsetZ;
         int climate = getClimateAt(centerX, centerY);
         RealisticBiomeBase biome = continents.isIslandVolcano(landmassX, landmassZ)
-                ? selectIslandBiome(2, climate, centerX, centerY)
+                ? selectIslandBiome(1, climate, centerX, centerY)
                 : getLandBiomeAt(centerX, centerY, climate);
         if (biome == null) biome = getLandBiomeAt(centerX, centerY, climate);
-        float height = biome.rNoise(perlin, cell, centerX, centerY, 2f, 1f, 1f);
+        float continent = getContinentValue(centerX, centerY);
+        float height = biome.rNoise(perlin, cell, centerX, centerY, getTerrainOceanValue(continent), 1f, 1f, continent);
         if (volcanoBaseHeightMap.size() > 256) volcanoBaseHeightMap.clear();
         volcanoBaseHeightMap.put(seedCoordinates, height);
         return height;
@@ -545,28 +573,15 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         int centerZ = (int) centerCoordinates - ConfigRWG.landmassOffsetZ;
         int climate = getClimateAt(centerX, centerZ);
         RealisticBiomeBase biome = continents.isIslandVolcano(shiftedX, shiftedZ)
-                ? selectIslandBiome(2, climate, centerX, centerZ)
+                ? selectIslandBiome(1, climate, centerX, centerZ)
                 : getLandBiomeAt(x, y, getClimateAt(x, y));
         if (biome == null) biome = getLandBiomeAt(centerX, centerZ, climate);
         return biome;
     }
 
-    private boolean isVolcanoAboveUnderlying(int x, int y) {
-        long coordinates = getVolcanoCoordinates(x, y);
-        if (coordinates == Long.MIN_VALUE) return false;
-        float underlyingHeight = getVolcanoUnderlyingHeight(x, y);
-        float volcanoHeight = ((RealisticBiomeIslandVolcano) Support.volcanoIsland).rNoiseAt(
-                perlin,
-                ContinentalNoise.unpackVolcanoX(coordinates),
-                ContinentalNoise.unpackVolcanoY(coordinates),
-                getVolcanoBaseHeight(x, y),
-                underlyingHeight);
-        return volcanoHeight > underlyingHeight;
-    }
-
     private RealisticBiomeBase selectIslandBiome(int tier, int climate, int seedX, int seedY) {
         ArrayList<RealisticBiomeBase> sized = tier == 0 ? smallIslandBiomes[climate - 1]
-                : tier == 1 ? mediumIslandBiomes[climate - 1] : largeIslandBiomes[climate - 1];
+                : largeIslandBiomes[climate - 1];
         ArrayList<RealisticBiomeBase> general = islandBiomes[climate - 1];
         return general.isEmpty() && sized.isEmpty() ? null
                 : selectCombinedBiome(general, sized, biomeX(seedX), biomeZ(seedY));

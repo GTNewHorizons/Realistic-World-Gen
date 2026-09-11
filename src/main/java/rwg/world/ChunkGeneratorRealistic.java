@@ -93,6 +93,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
     private final float[] riverStrength;
     private final float[] riverSample;
     private final float[] continentValues;
+    private final byte[] volcanoSurfaceDepth;
     private final float[] mapGenBiomes;
     private final float[] borderNoise;
 
@@ -187,6 +188,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
         riverStrength = new float[256];
         riverSample = new float[4];
         continentValues = new float[256];
+        volcanoSurfaceDepth = new byte[256];
         mapGenBiomes = new float[258];
         borderNoise = new float[256];
         biomesForGeneration = new RealisticBiomeBase[256];
@@ -292,7 +294,14 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
 
         for (i = -sampleSize; i < sampleSize + 5; i++) {
             for (j = -sampleSize; j < sampleSize + 5; j++) {
-                int biomeID = cmr.getBiomeDataAt(x + ((i * 8) - 8), y + ((j * 8) - 8)).biomeID;
+                int sampleX = x + ((i * 8) - 8);
+                int sampleZ = y + ((j * 8) - 8);
+                RealisticBiomeBase sampledBiome = cmr.getBiomeDataAt(sampleX, sampleZ);
+                if (sampledBiome instanceof RealisticBiomeIslandVolcano) {
+                    RealisticBiomeBase underlyingBiome = cmr.getVolcanoUnderlyingBiome(sampleX, sampleZ);
+                    if (underlyingBiome != null) sampledBiome = underlyingBiome;
+                }
+                int biomeID = sampledBiome.biomeID;
                 biomeData[(i + sampleSize) * sampleArraySize + (j + sampleSize)] = biomeID;
                 activeBiomeFlags[biomeID] = true;
             }
@@ -435,6 +444,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
 
                 testHeight[i * 16 + j] = 0f;
                 mountainChainWeight[i * 16 + j] = 0f;
+                volcanoSurfaceDepth[j * 16 + i] = 0;
 
                 river = cmr.getRiverStrength(x + i, y + j, riverSample);
                 riverStrength[i * 16 + j] = river;
@@ -461,36 +471,39 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
                         }
 
                         RealisticBiomeBase noiseBiome = RealisticBiomeBase.getBiome(k);
-                        float biomeHeight;
-                        if (noiseBiome instanceof RealisticBiomeIslandVolcano) {
-                            // Biome smoothing carries some volcano weight beyond its physical 95-block footprint.
-                            // Keep local volcano coordinates throughout that transition ring so the cone blends back
-                            // into the actual island terrain instead of the volcano's fixed-height fallback.
-                            long coordinates = cmr.getVolcanoVicinityCoordinates(x + i, y + j);
-                            biomeHeight = coordinates == Long.MIN_VALUE
-                                    ? noiseBiome
-                                            .rNoise(perlin, cell, x + i, y + j, ocean, smallRender[l][k], river + 1f)
-                                    : ((RealisticBiomeIslandVolcano) noiseBiome).rNoiseAt(
-                                            perlin,
-                                            ContinentalNoise.unpackVolcanoX(coordinates),
-                                            ContinentalNoise.unpackVolcanoY(coordinates),
-                                            cmr.getVolcanoBaseHeight(x + i, y + j),
-                                            cmr.getVolcanoUnderlyingHeight(x + i, y + j));
-                        } else {
-                            biomeHeight = noiseBiome.rNoise(
-                                    perlin,
-                                    cell,
-                                    x + i,
-                                    y + j,
-                                    ocean,
-                                    smallRender[l][k],
-                                    river + 1f,
-                                    continent);
-                        }
                         float weight = smallRender[l][k];
+                        float biomeHeight = noiseBiome
+                                .rNoise(perlin, cell, x + i, y + j, ocean, weight, river + 1f, continent);
                         testHeight[i * 16 + j] += biomeHeight * weight;
                         if (noiseBiome instanceof RealisticBiomeMountainChain) {
                             mountainChainWeight[i * 16 + j] += weight;
+                        }
+                    }
+                }
+                if (Support.volcanoIsland instanceof RealisticBiomeIslandVolcano) {
+                    long coordinates = cmr.getVolcanoVicinityCoordinates(x + i, y + j);
+                    if (coordinates != Long.MIN_VALUE) {
+                        float underlyingHeight = testHeight[i * 16 + j];
+                        float volcanoHeight = ((RealisticBiomeIslandVolcano) Support.volcanoIsland).rNoiseAt(
+                                perlin,
+                                ContinentalNoise.unpackVolcanoX(coordinates),
+                                ContinentalNoise.unpackVolcanoY(coordinates),
+                                cmr.getVolcanoBaseHeight(x + i, y + j),
+                                underlyingHeight);
+                        testHeight[i * 16 + j] = volcanoHeight;
+                        int addedBlocks = (int) volcanoHeight - (int) underlyingHeight;
+                        boolean lavaBasin = ((RealisticBiomeIslandVolcano) Support.volcanoIsland).isInsideLavaFill(
+                                perlin,
+                                ContinentalNoise.unpackVolcanoX(coordinates),
+                                ContinentalNoise.unpackVolcanoY(coordinates));
+                        float ashBlend = Math.max(0f, Math.min(1f, (addedBlocks - 1f) / 4f));
+                        float ashNoise = Math
+                                .max(0f, Math.min(1f, .5f + perlin.noise2((x + i) / 12f, (y + j) / 12f) * .5f));
+                        boolean volcanicSurface = addedBlocks >= 5 || addedBlocks > 0 && ashBlend > ashNoise;
+                        if ((volcanicSurface || lavaBasin)
+                                && cmr.getVolcanoCoordinates(x + i, y + j) != Long.MIN_VALUE) {
+                            biomes[j * 16 + i] = Support.volcanoIsland;
+                            volcanoSurfaceDepth[j * 16 + i] = (byte) (lavaBasin ? 6 : Math.min(127, addedBlocks));
                         }
                     }
                 }
@@ -625,13 +638,11 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
                     long coordinates = cmr.getVolcanoCoordinates(blockX, blockY);
                     if (coordinates != Long.MIN_VALUE) {
                         RealisticBiomeBase underlyingBiome = cmr.getVolcanoUnderlyingBiome(blockX, blockY);
-                        float underlyingHeight = cmr.getVolcanoUnderlyingHeight(blockX, blockY);
                         float localX = ContinentalNoise.unpackVolcanoX(coordinates);
                         float localZ = ContinentalNoise.unpackVolcanoY(coordinates);
                         float baseHeight = cmr.getVolcanoBaseHeight(blockX, blockY);
-                        float volcanoHeight = ((RealisticBiomeIslandVolcano) biome)
-                                .rNoiseAt(perlin, localX, localZ, baseHeight, underlyingHeight);
-                        if (volcanoHeight > underlyingHeight || underlyingBiome == null) {
+                        int addedBlocks = volcanoSurfaceDepth[i * 16 + j] & 255;
+                        if (addedBlocks > 0 || underlyingBiome == null) {
                             ((RealisticBiomeIslandVolcano) biome).rReplaceAt(
                                     blocks,
                                     metadata,
@@ -650,7 +661,8 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
                                     localX,
                                     localZ,
                                     baseHeight,
-                                    underlyingHeight);
+                                    cmr.getVolcanoUnderlyingHeight(blockX, blockY),
+                                    Math.max(1, addedBlocks));
                         } else {
                             base[i * 16 + j] = underlyingBiome.baseBiome;
                             underlyingBiome.rReplace(

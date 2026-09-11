@@ -77,6 +77,7 @@ public final class RWGPreviewTool {
             0x666666 };
     private static final List<BiomeGenBase> ADDON_BIOMES = new ArrayList<BiomeGenBase>();
     private static final Map<BiomeGenBase, String> ADDON_SOURCES = new IdentityHashMap<BiomeGenBase, String>();
+    private static final Map<BiomeGenBase, String> ADDON_COMMENTS = new IdentityHashMap<BiomeGenBase, String>();
 
     public static void main(String[] args) {
         boolean instrumentOnly = Arrays.asList(args).contains("--instrument");
@@ -134,7 +135,34 @@ public final class RWGPreviewTool {
                 .setTemperatureRainfall(temperature, .5f);
         ADDON_BIOMES.add(biome);
         ADDON_SOURCES.put(biome, source);
+        String comment = disabledComment(fieldName, source);
+        if (comment != null) ADDON_COMMENTS.put(biome, comment);
         return biome;
+    }
+
+    private static String disabledComment(String fieldName, String source) {
+        String lower = fieldName.toLowerCase();
+        if ("BOP".equals(source) && (lower.equals("undergarden") || lower.equals("phantasmagoricinferno")
+                || lower.equals("boneyard")
+                || lower.equals("visceralheap")
+                || lower.equals("polarchasm")
+                || lower.equals("spectralgarden")))
+            return "Nether biome";
+        if (lower.startsWith("alps") || lower.equals("arctic")
+                || lower.equals("canyonravine")
+                || lower.equals("glacier")
+                || lower.equals("denseforest")
+                || lower.equals("sprucewoods")
+                || lower.contains("river")
+                || lower.contains("mountain"))
+            return "Not Useful";
+        if (lower.equals("xericshrubland") || lower.equals("originvalley")
+                || lower.equals("silkglades")
+                || lower.equals("silkglade")
+                || lower.equals("mysticgrove"))
+            return "Weird";
+        if (lower.equals("marsh")) return "Buggy";
+        return null;
     }
 
     private static int nextBiomeId() {
@@ -304,7 +332,17 @@ public final class RWGPreviewTool {
         for (RealisticBiomeBase biome : configuredBiomes) if (biome != null) supported.add(biome.baseBiome);
         List<BiomeGenBase> missing = new ArrayList<BiomeGenBase>();
         for (BiomeGenBase biome : ADDON_BIOMES) if (!supported.contains(biome)) missing.add(biome);
-        Collections.sort(missing, (a, b) -> a.biomeName.compareToIgnoreCase(b.biomeName));
+        Collections.sort(missing, (a, b) -> {
+            String aComment = ADDON_COMMENTS.get(a);
+            String bComment = ADDON_COMMENTS.get(b);
+            if (aComment == null && bComment != null) return 1;
+            if (aComment != null && bComment == null) return -1;
+            if (aComment != null) {
+                int commentOrder = aComment.compareToIgnoreCase(bComment);
+                if (commentOrder != 0) return commentOrder;
+            }
+            return a.biomeName.compareToIgnoreCase(b.biomeName);
+        });
 
         JPanel entries = new JPanel();
         entries.setLayout(new BoxLayout(entries, BoxLayout.Y_AXIS));
@@ -359,9 +397,10 @@ public final class RWGPreviewTool {
         disabledHeader.setAlignmentX(0f);
         entries.add(disabledHeader);
         for (BiomeGenBase biome : missing) {
+            String comment = ADDON_COMMENTS.get(biome);
             addSidebarEntry(
                     entries,
-                    "N/A - " + biome.biomeName + sourceSuffix(biome),
+                    (comment == null ? "N/A" : comment) + " - " + biome.biomeName + sourceSuffix(biome),
                     CATEGORY_COLORS[7],
                     -1,
                     -1,
@@ -419,10 +458,15 @@ public final class RWGPreviewTool {
     }
 
     private static String placementName(BiomePlacement placement) {
-        if (placement == BiomePlacement.COLD_BORDER) return "Cold Border";
-        if (placement == BiomePlacement.HOT_BORDER) return "Hot Border";
-        String lower = placement.name().toLowerCase();
-        return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
+        if (placement == BiomePlacement.SMALL_ISLAND) return "Small Islands";
+        if (placement == BiomePlacement.LARGE_ISLAND) return "Large Islands";
+        if (placement == BiomePlacement.ISLAND) return "All Island Sizes";
+        StringBuilder name = new StringBuilder();
+        for (String word : placement.name().toLowerCase().split("_")) {
+            if (name.length() > 0) name.append(' ');
+            name.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+        }
+        return name.toString();
     }
 
     private static JLabel sidebarLabel(JPanel entries, String text, int color) {
@@ -477,7 +521,6 @@ public final class RWGPreviewTool {
 
     private static String biomeName(RealisticBiomeBase biome) {
         String name = biome.getDisplayName() == null ? biome.baseBiome.biomeName : biome.getDisplayName();
-        if (biome == RealisticBiomeBase.hotPlainsCanyonIsland) return "Hot Plains Canyon Island";
         if (biome instanceof RealisticBiomeSupport) {
             String source = ADDON_SOURCES.get(biome.baseBiome);
             if (source != null) {

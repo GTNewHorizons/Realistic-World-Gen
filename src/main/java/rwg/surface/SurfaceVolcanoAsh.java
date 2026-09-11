@@ -22,6 +22,12 @@ public class SurfaceVolcanoAsh extends SurfaceBase {
     @Override
     public void paintTerrain(Block[] blocks, byte[] metadata, int i, int j, int x, int y, int depth, World world,
             Random rand, NoiseGenerator perlin, CellNoise cell, float[] noise, float river, BiomeGenBase[] base) {
+        paintTerrain(blocks, metadata, i, j, x, y, depth, world, rand, perlin, cell, noise, river, base, 6);
+    }
+
+    public void paintTerrain(Block[] blocks, byte[] metadata, int i, int j, int x, int y, int depth, World world,
+            Random rand, NoiseGenerator perlin, CellNoise cell, float[] noise, float river, BiomeGenBase[] base,
+            int surfaceDepth) {
         int column = (y * 16 + x) * 256;
         boolean ashSurface = false;
         for (int level = 255; level >= 0; level--) {
@@ -37,7 +43,7 @@ public class SurfaceVolcanoAsh extends SurfaceBase {
                         blocks[column + level] = topBlock;
                         metadata[column + level] = 0;
                     }
-                } else if (ashSurface && depth < 6) {
+                } else if (ashSurface && depth < 6 && depth < surfaceDepth) {
                     blocks[column + level] = fillerBlock;
                     metadata[column + level] = 0;
                 }

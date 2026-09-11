@@ -3,6 +3,7 @@ package rwg.support;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.world.biome.BiomeGenBase;
 
 import cpw.mods.fml.common.Loader;
@@ -10,6 +11,10 @@ import rwg.api.RWGBiomes;
 import rwg.biomes.realistic.RealisticBiomeBase;
 import rwg.biomes.realistic.land.RealisticBiomeMountainChain;
 import rwg.biomes.realistic.ocean.RealisticBiomeOcean;
+import rwg.surface.SurfaceGrassland;
+import rwg.terrain.TerrainHighland;
+import rwg.terrain.TerrainMarsh;
+import rwg.terrain.TerrainSwampMountain;
 
 public class Support {
 
@@ -55,10 +60,10 @@ public class Support {
         public final ArrayList<RealisticBiomeBase> hotBorder = new ArrayList<RealisticBiomeBase>();
         public final ArrayList<RealisticBiomeBase> veryColdBorder = new ArrayList<RealisticBiomeBase>();
         public final ArrayList<RealisticBiomeBase> veryHotBorder = new ArrayList<RealisticBiomeBase>();
+        public final ArrayList<RealisticBiomeBase> littoral = new ArrayList<RealisticBiomeBase>();
         public final ArrayList<RealisticBiomeBase> small = new ArrayList<RealisticBiomeBase>();
         public final ArrayList<RealisticBiomeBase> island = new ArrayList<RealisticBiomeBase>();
         public final ArrayList<RealisticBiomeBase> smallIsland = new ArrayList<RealisticBiomeBase>();
-        public final ArrayList<RealisticBiomeBase> mediumIsland = new ArrayList<RealisticBiomeBase>();
         public final ArrayList<RealisticBiomeBase> largeIsland = new ArrayList<RealisticBiomeBase>();
     }
 
@@ -69,10 +74,10 @@ public class Support {
         HOT_BORDER,
         VERY_COLD_BORDER,
         VERY_HOT_BORDER,
+        LITTORAL,
         SMALL,
         ISLAND,
         SMALL_ISLAND,
-        MEDIUM_ISLAND,
         LARGE_ISLAND
     }
 
@@ -91,7 +96,57 @@ public class Support {
         biomes_wet = wet.core;
         biomes_small = new ArrayList<RealisticBiomeBase>();
         biomes_test = new ArrayList<RealisticBiomeBase>();
-        addBiome(RealisticBiomeBase.hotPlainsCanyonIsland, BiomeCategory.HOT, BiomePlacement.ISLAND);
+        RealisticBiomeBase.hotPlainsCanyonIsland.setDisplayName("Hot Plains (Canyon)");
+        addBiome(RealisticBiomeBase.hotPlainsCanyonIsland, BiomeCategory.HOT, BiomePlacement.LARGE_ISLAND);
+        addBiome(
+                new RealisticBiomeSupport(
+                        BiomeGenBase.mushroomIsland,
+                        RWGBiomes.baseRiverWet,
+                        new TerrainSwampMountain(135f, 300f),
+                        new SurfaceGrassland(
+                                BiomeGenBase.mushroomIsland.topBlock,
+                                BiomeGenBase.mushroomIsland.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.WET,
+                BiomePlacement.SMALL_ISLAND);
+        addBiome(
+                new RealisticBiomeSupport(
+                        BiomeGenBase.jungle,
+                        RWGBiomes.baseRiverWet,
+                        new TerrainHighland(0f, 140f, 68f, 200f),
+                        new SurfaceGrassland(
+                                BiomeGenBase.jungle.topBlock,
+                                BiomeGenBase.jungle.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.WET);
+        BiomeGenBase icePlainsSpikes = BiomeGenBase.getBiome(BiomeGenBase.icePlains.biomeID + 128);
+        addBiome(
+                new RealisticBiomeSupport(
+                        icePlainsSpikes,
+                        RWGBiomes.baseRiverIce,
+                        new TerrainHighland(0f, 140f, 68f, 200f),
+                        new SurfaceGrassland(
+                                icePlainsSpikes.topBlock,
+                                icePlainsSpikes.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.SNOW,
+                BiomePlacement.SMALL);
+        BiomeGenBase sunflowerPlains = BiomeGenBase.getBiome(BiomeGenBase.plains.biomeID + 128);
+        addBiome(
+                new RealisticBiomeSupport(
+                        sunflowerPlains,
+                        RWGBiomes.baseRiverTemperate,
+                        new TerrainMarsh(),
+                        new SurfaceGrassland(
+                                sunflowerPlains.topBlock,
+                                sunflowerPlains.fillerBlock,
+                                Blocks.stone,
+                                Blocks.cobblestone)),
+                BiomeCategory.COLD,
+                BiomePlacement.SMALL);
         volcanoIsland = null;
         oceanShallowSnow = new RealisticBiomeOcean(
                 RWGBiomes.baseOceanCold,
@@ -197,12 +252,11 @@ public class Support {
                         : placement == BiomePlacement.HOT_BORDER ? lists.hotBorder
                                 : placement == BiomePlacement.VERY_COLD_BORDER ? lists.veryColdBorder
                                         : placement == BiomePlacement.VERY_HOT_BORDER ? lists.veryHotBorder
-                                                : placement == BiomePlacement.SMALL ? lists.small
-                                                        : placement == BiomePlacement.ISLAND ? lists.island
-                                                                : placement == BiomePlacement.SMALL_ISLAND
-                                                                        ? lists.smallIsland
-                                                                        : placement == BiomePlacement.MEDIUM_ISLAND
-                                                                                ? lists.mediumIsland
+                                                : placement == BiomePlacement.LITTORAL ? lists.littoral
+                                                        : placement == BiomePlacement.SMALL ? lists.small
+                                                                : placement == BiomePlacement.ISLAND ? lists.island
+                                                                        : placement == BiomePlacement.SMALL_ISLAND
+                                                                                ? lists.smallIsland
                                                                                 : placement
                                                                                         == BiomePlacement.LARGE_ISLAND
                                                                                                 ? lists.largeIsland

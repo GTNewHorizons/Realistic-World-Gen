@@ -10,8 +10,8 @@ import rwg.config.ConfigRWG;
 public class ContinentalNoise {
 
     /** Outer radius used for volcano blending and exclusion zones. */
-    public static final double VOLCANO_ISLAND_RADIUS = 135D;
-    public static final double VOLCANO_RADIUS = 110D;
+    public static final double VOLCANO_ISLAND_RADIUS = 160D;
+    public static final double VOLCANO_RADIUS = 130D;
     private static final int POISSON_ROUNDS = 8;
     private static final double WARP_SCALE = 3600D;
     private static final double WARP_STRENGTH = 1800D;
@@ -133,12 +133,12 @@ public class ContinentalNoise {
         return sampleLandform(x, y).island;
     }
 
-    /** Returns 0/1/2 for a small/medium/large island, or -1 when the coordinate is not on an island. */
+    /** Returns 0/1 for a small/large island, or -1 when the coordinate is not on an island. */
     public int getIslandSizeTier(int x, int y) {
         LandformSample sample = sampleLandform(x, y);
         if (!sample.island) return -1;
         double fraction = islandWidthRange == 0D ? 0D : (sample.islandWidth - minimumIslandWidth) / islandWidthRange;
-        return fraction < 1D / 3D ? 0 : fraction < 2D / 3D ? 1 : 2;
+        return fraction < .5D ? 0 : 1;
     }
 
     /** Returns the winning island seed coordinates, packed as two signed integers. */
@@ -245,7 +245,7 @@ public class ContinentalNoise {
             double[] center = getIslandCenter(result.islandSeedX, result.islandSeedZ);
             result.islandLocalX = (float) (x - center[2]);
             result.islandLocalZ = (float) (y - center[3]);
-            result.volcano = getIslandSizeTier(result.islandWidth) == 2
+            result.volcano = getIslandSizeTier(result.islandWidth) == 1
                     && random01(result.islandSeedX, result.islandSeedZ, 17) < ConfigRWG.largeIslandVolcanoChance;
             if (result.volcano) {
                 result.volcanoIsland = true;
@@ -282,7 +282,7 @@ public class ContinentalNoise {
 
     private int getIslandSizeTier(double width) {
         double fraction = islandWidthRange == 0D ? 0D : (width - minimumIslandWidth) / islandWidthRange;
-        return fraction < 1D / 3D ? 0 : fraction < 2D / 3D ? 1 : 2;
+        return fraction < .5D ? 0 : 1;
     }
 
     public long getVolcanoCoordinates(int x, int y) {
