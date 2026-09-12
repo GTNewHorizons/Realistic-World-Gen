@@ -840,20 +840,6 @@ public class SupportBOP {
                 BiomeCategory.HOT,
                 BiomePlacement.SMALL);
 
-        // CORRUPTED SANDS
-        Support.addBiome(
-                new RealisticBiomeSupport(
-                        BOPCBiomes.corruptedSands,
-                        RWGBiomes.baseRiverHot,
-                        new TerrainSwampMountain(135f, 300f),
-                        new SurfaceGrassland(
-                                BOPCBiomes.corruptedSands.topBlock,
-                                BOPCBiomes.corruptedSands.fillerBlock,
-                                Blocks.stone,
-                                Blocks.cobblestone)),
-                BiomeCategory.HOT,
-                BiomePlacement.SMALL_ISLAND);
-
         // TUNDRA
         Support.addBiome(
                 new RealisticBiomeSupport(
@@ -878,15 +864,14 @@ public class SupportBOP {
         Support.addBiome(
                 new RealisticBiomeSupport(
                         BOPCBiomes.wetland,
-                        RWGBiomes.baseRiverWet,
+                        RWGBiomes.baseRiverCold,
                         new TerrainMarsh(),
                         new SurfaceGrassland(
                                 BOPCBiomes.wetland.topBlock,
                                 BOPCBiomes.wetland.fillerBlock,
                                 Blocks.stone,
                                 Blocks.cobblestone)),
-                BiomeCategory.WET,
-                BiomePlacement.LITTORAL);
+                BiomeCategory.COLD);
 
         // WOODLAND
         Support.addBiome(

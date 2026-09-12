@@ -45,6 +45,7 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     private static final double CLIMATE_BORDER_DISTANCE_DIFFERENCE = 288D;
     private static final float LITTORAL_WIDTH = 432f;
     private static final double SMALL_BIOME_RADIUS = 75D;
+    private static final int VOLCANO_RIVER_SAMPLE_SPACING = 16;
 
     private BiomeCache biomeCache;
     private List biomesToSpawnIn;
@@ -410,9 +411,36 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     }
 
     private boolean canGenerateVolcanoAt(int x, int y) {
-        return Support.volcanoIsland instanceof RealisticBiomeIslandVolcano
+        if (!(Support.volcanoIsland instanceof RealisticBiomeIslandVolcano)) return false;
+        int landmassX = landmassX(x);
+        int landmassZ = landmassZ(y);
+        long key = continents.getVolcanoSeedKey(landmassX, landmassZ);
+        if (key == Long.MIN_VALUE) return false;
+        if (volcanoEligibilityMap.containsKey(key)) return volcanoEligibilityMap.get(key) == 1;
+
+        long centerCoordinates = continents.getVolcanoCenterCoordinates(landmassX, landmassZ);
+        int centerX = (int) (centerCoordinates >> 32) - ConfigRWG.landmassOffsetX;
+        int centerZ = (int) centerCoordinates - ConfigRWG.landmassOffsetZ;
+        boolean eligible = !hasRiverNearVolcano(centerX, centerZ)
                 && ((RealisticBiomeIslandVolcano) Support.volcanoIsland)
                         .canGenerateAtHeight(getVolcanoBaseHeight(x, y));
+        if (volcanoEligibilityMap.size() > 256) volcanoEligibilityMap.clear();
+        volcanoEligibilityMap.put(key, (byte) (eligible ? 1 : 2));
+        return eligible;
+    }
+
+    private boolean hasRiverNearVolcano(int centerX, int centerZ) {
+        int radius = (int) Math.ceil(ContinentalNoise.VOLCANO_ISLAND_RADIUS);
+        int radiusSquared = radius * radius;
+        for (int offsetX = -radius; offsetX <= radius; offsetX += VOLCANO_RIVER_SAMPLE_SPACING) {
+            for (int offsetZ = -radius; offsetZ <= radius; offsetZ += VOLCANO_RIVER_SAMPLE_SPACING) {
+                if (offsetX * offsetX + offsetZ * offsetZ <= radiusSquared
+                        && getRawRiverStrength(centerX + offsetX, centerZ + offsetZ) < 0f) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -550,7 +578,10 @@ public class ChunkManagerRealistic extends WorldChunkManager {
                 : getLandBiomeAt(centerX, centerY, climate);
         if (biome == null) biome = getLandBiomeAt(centerX, centerY, climate);
         float continent = getContinentValue(centerX, centerY);
-        float height = biome.rNoise(perlin, cell, centerX, centerY, getTerrainOceanValue(continent), 1f, 1f, continent);
+        float river = getRawRiverStrength(centerX, centerY);
+        float height = biome
+                .rNoise(perlin, cell, centerX, centerY, getTerrainOceanValue(continent), 1f, river + 1f, continent);
+        height = calculateRiver(centerX, centerY, river, height);
         if (volcanoBaseHeightMap.size() > 256) volcanoBaseHeightMap.clear();
         volcanoBaseHeightMap.put(seedCoordinates, height);
         return height;
@@ -561,7 +592,9 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         RealisticBiomeBase biome = getVolcanoUnderlyingBiome(x, y);
         if (biome == null) return 63f;
         float continent = getContinentValue(x, y);
-        return biome.rNoise(perlin, cell, x, y, getTerrainOceanValue(continent), 1f, 1f, continent);
+        float river = getRawRiverStrength(x, y);
+        float height = biome.rNoise(perlin, cell, x, y, getTerrainOceanValue(continent), 1f, river + 1f, continent);
+        return calculateRiver(x, y, river, height);
     }
 
     public RealisticBiomeBase getVolcanoUnderlyingBiome(int x, int y) {
@@ -596,6 +629,7 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     private TLongObjectHashMap<RealisticBiomeBase> biomeDataMap = new TLongObjectHashMap<RealisticBiomeBase>();
     private TLongByteHashMap metaBiomeDataMap = new TLongByteHashMap();
     private TLongFloatHashMap volcanoBaseHeightMap = new TLongFloatHashMap();
+    private TLongByteHashMap volcanoEligibilityMap = new TLongByteHashMap();
 
     private RealisticBiomeBase getOceanBiome(float continent, int climate, int x, int y) {
         if (continent < -SHALLOW_OCEAN_WIDTH) {
@@ -835,7 +869,7 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     }
 
     private float getRiverStrength(int x, int y, float pX, float pY) {
-        float strength = cell.border(pX / 1250D, pY / 1250D, 50D / 300D, 1f);
+        float strength = getRawRiverStrength(pX, pY);
         if (!continental) {
             return strength;
         }
@@ -854,6 +888,16 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         float blend = (float) ((distance - ContinentalNoise.VOLCANO_RADIUS)
                 / (ContinentalNoise.VOLCANO_ISLAND_RADIUS - ContinentalNoise.VOLCANO_RADIUS));
         return strength < 0f ? strength * blend : strength;
+    }
+
+    private float getRawRiverStrength(int x, int y) {
+        float pX = x + (perlin.noise1(y / 240f) * 220f);
+        float pY = y + (perlin.noise1(x / 240f) * 220f);
+        return getRawRiverStrength(pX, pY);
+    }
+
+    private float getRawRiverStrength(float pX, float pY) {
+        return cell.border(pX / 1250D, pY / 1250D, 50D / 300D, 1f);
     }
 
     public boolean isBorderlessAt(int x, int y) {

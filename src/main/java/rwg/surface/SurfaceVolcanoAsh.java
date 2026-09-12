@@ -44,7 +44,7 @@ public class SurfaceVolcanoAsh extends SurfaceBase {
                         metadata[column + level] = 0;
                     }
                 } else if (ashSurface && depth < 6 && depth < surfaceDepth) {
-                    blocks[column + level] = fillerBlock;
+                    blocks[column + level] = depth < 2 ? topBlock : fillerBlock;
                     metadata[column + level] = 0;
                 }
             }

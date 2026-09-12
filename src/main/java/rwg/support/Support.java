@@ -14,7 +14,6 @@ import rwg.biomes.realistic.ocean.RealisticBiomeOcean;
 import rwg.surface.SurfaceGrassland;
 import rwg.terrain.TerrainHighland;
 import rwg.terrain.TerrainMarsh;
-import rwg.terrain.TerrainSwampMountain;
 
 public class Support {
 
@@ -102,7 +101,7 @@ public class Support {
                 new RealisticBiomeSupport(
                         BiomeGenBase.mushroomIsland,
                         RWGBiomes.baseRiverWet,
-                        new TerrainSwampMountain(135f, 300f),
+                        new TerrainHighland(6f, 120f, 65f, 200f),
                         new SurfaceGrassland(
                                 BiomeGenBase.mushroomIsland.topBlock,
                                 BiomeGenBase.mushroomIsland.fillerBlock,

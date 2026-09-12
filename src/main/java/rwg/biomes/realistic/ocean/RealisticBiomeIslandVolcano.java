@@ -26,10 +26,10 @@ public class RealisticBiomeIslandVolcano extends RealisticBiomeBase {
     private static final float OUTER_SLOPE_WIDTH = 86f;
     private static final float CRATER_FLOOR_OFFSET = 4f;
     private static final float LAVA_LEVEL_OFFSET = 18f;
-    private static final float RIM_HEIGHT_OFFSET = 27f;
-    private static final float TERRAIN_HEIGHT_RELIEF_FACTOR = .35f;
-    private static final float MIN_RIM_HEIGHT_OFFSET = 24f;
-    private static final float MAX_RIM_HEIGHT_OFFSET = 48f;
+    private static final float RIM_HEIGHT_OFFSET = 44f;
+    private static final float TERRAIN_HEIGHT_RELIEF_FACTOR = .2f;
+    private static final float MIN_RIM_HEIGHT_OFFSET = 40f;
+    private static final float MAX_RIM_HEIGHT_OFFSET = 60f;
     private static final float SUMMIT_NOISE_ALLOWANCE = 2f;
     private static final float MAX_SAFE_SUMMIT_Y = 250f;
     private static final int VENT_RADIUS = 5;
