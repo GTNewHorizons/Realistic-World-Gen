@@ -5,8 +5,8 @@ import java.util.List;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 
-/** Selects rare volcano centres from the raw darts of the continent Poisson field which land on continents. */
-final class ContinentVolcanoNoise {
+/** Selects deterministic landmark centres from raw darts of the continent Poisson field which land on continents. */
+final class ContinentLandmarkNoise {
 
     private static final int CACHE_LIMIT = 4096;
 
@@ -22,7 +22,7 @@ final class ContinentVolcanoNoise {
     private final double[] point = new double[2];
     private final double[] nearestContinent = new double[5];
 
-    ContinentVolcanoNoise(long continentSeed, long selectionSeed, PoissonPointNoise continents,
+    ContinentLandmarkNoise(long continentSeed, long selectionSeed, PoissonPointNoise continents,
             double minimumContinentWidth, double maximumContinentWidth, double voronoiRadius,
             double averagePerContinent, double searchRadius) {
         this.continentSeed = continentSeed;

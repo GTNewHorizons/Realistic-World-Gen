@@ -34,7 +34,7 @@ public class ConfigRWG {
     public static float maximumIslandWidth = 600f;
     public static float islandPlacementChance = 0.30f;
     public static float largeIslandVolcanoChance = 0.15f;
-    public static float averageContinentVolcanoCount = 0.25f;
+    public static float averageLandmarksPerTypeAndContinent = 0.25f;
     public static int landmassOffsetX = 0;
     public static int landmassOffsetZ = 0;
     public static int biomeOffsetX = 0;
@@ -155,14 +155,14 @@ public class ConfigRWG {
                     0f,
                     1f,
                     "Chance for a large island to contain a volcano. " + worldgenWarning);
-            averageContinentVolcanoCount = config.getFloat(
-                    "Average Volcano Count Per Continent",
+            averageLandmarksPerTypeAndContinent = config.getFloat(
+                    "Average Landmarks Per Type And Continent",
                     CONTINENTAL_CATEGORY,
                     0.25f,
                     0f,
                     100f,
-                    "Approximate average number of volcanoes per continent. Candidate probability is corrected for "
-                            + "the configured continental land fraction. "
+                    "Approximate average number of each enabled landmark type per continent. Candidate probability "
+                            + "is corrected for the configured continental land fraction. "
                             + worldgenWarning);
             config.setCategoryPropertyOrder(
                     CONTINENTAL_CATEGORY,
@@ -176,7 +176,7 @@ public class ConfigRWG {
                             "Maximum Island Width",
                             "Island Placement Chance",
                             "Large Island Volcano Chance",
-                            "Average Volcano Count Per Continent"));
+                            "Average Landmarks Per Type And Continent"));
             String expertCategory = "Expert / Worldgen Migration";
             config.setCategoryComment(
                     expertCategory,
@@ -257,6 +257,10 @@ public class ConfigRWG {
         config.moveProperty("Continental World", "Island Placement Chance", CONTINENTAL_CATEGORY);
         config.moveProperty("Continental World", "Large Island Volcano Chance", CONTINENTAL_CATEGORY);
         config.moveProperty("Continental World", "Average Volcano Count Per Continent", CONTINENTAL_CATEGORY);
+        config.renameProperty(
+                CONTINENTAL_CATEGORY,
+                "Average Volcano Count Per Continent",
+                "Average Landmarks Per Type And Continent");
         config.moveProperty("Continental World", "Large Ocean Chance", CONTINENTAL_CATEGORY);
         config.getCategory(CONTINENTAL_CATEGORY).remove("Large Ocean Chance");
         config.renameProperty("biome ids", "00 rwg_riverIce", "00 Ice River");

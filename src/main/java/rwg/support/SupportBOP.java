@@ -34,6 +34,8 @@ import rwg.terrain.TerrainSwampRiver;
 public class SupportBOP {
 
     public static void init() {
+        Support.lavaCaveMarkerBiome = BOPCBiomes.phantasmagoricInferno;
+        Support.lavaCaveSmolderingGrass = BOPCBlocks.bopGrass;
         if (BOPCBiomes.kelpForest != null) {
             Support.oceanShallowKelp = new RealisticBiomeBOPOcean(
                     BOPCBiomes.kelpForest,
@@ -346,6 +348,10 @@ public class SupportBOP {
                         .setDisplayName("Jungle Mesa Island"),
                 BiomeCategory.WET,
                 BiomePlacement.LARGE_ISLAND);
+        Support.addBiome(
+                new RealisticBiomeFungiCanyonIsland(BOPCBiomes.fungiForest, BOPCBiomes.marsh)
+                        .setDisplayName("Jungle Mesa"),
+                BiomeCategory.WET);
 
         // GARDEN
         Support.addBiome(
@@ -381,7 +387,7 @@ public class SupportBOP {
                 new RealisticBiomeSupport(
                         BOPCBiomes.grove,
                         RWGBiomes.baseRiverTemperate,
-                        new TerrainHighland(0f, 140f, 68f, 200f),
+                        new TerrainHighland(0f, 140f, 68f, 200f, .3f),
                         new SurfaceGrassland(
                                 BOPCBiomes.grove.topBlock,
                                 BOPCBiomes.grove.fillerBlock,
@@ -552,18 +558,20 @@ public class SupportBOP {
                 BiomeCategory.COLD,
                 BiomePlacement.COLD_BORDER);
 
-        // MOOR
+        // GARDEN (MOOR TERRAIN)
         Support.addBiome(
                 new RealisticBiomeSupport(
-                        BOPCBiomes.moor,
+                        BOPCBiomes.garden,
                         RWGBiomes.baseRiverWet,
                         new TerrainMountainRiver(),
                         new SurfaceGrassland(
-                                BOPCBiomes.moor.topBlock,
-                                BOPCBiomes.moor.fillerBlock,
+                                BOPCBiomes.garden.topBlock,
+                                BOPCBiomes.garden.fillerBlock,
                                 Blocks.stone,
                                 Blocks.cobblestone)),
                 BiomeCategory.WET);
+
+        // MOOR - NOT USEFUL: excluded because its colors and content are a poor fit for the wet core pool.
 
         // MOUNTAIN
         Support.addBiome(

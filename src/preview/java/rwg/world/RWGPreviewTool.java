@@ -91,7 +91,43 @@ public final class RWGPreviewTool {
         SupportEBXL.init();
         SupportTC.init();
         Support.rebuildExtremeBorderMountains();
+        for (String argument : args) {
+            if (argument.startsWith("--probe=")) {
+                probe(argument.substring("--probe=".length()));
+                return;
+            }
+        }
         open(instrumentOnly);
+    }
+
+    private static void probe(String coordinates) {
+        String[] parts = coordinates.split(",");
+        if (parts.length != 2) throw new IllegalArgumentException("Probe coordinates must be x,z");
+        int centerX = Integer.parseInt(parts[0]);
+        int centerZ = Integer.parseInt(parts[1]);
+        ChunkManagerRealistic manager = new ChunkManagerRealistic(SEED, true);
+        ChunkGeneratorRealistic generator = new ChunkGeneratorRealistic(manager, SEED, true);
+        RealisticBiomeBase[] chunkBiomes = new RealisticBiomeBase[256];
+        for (int z = centerZ - 8; z <= centerZ + 8; z++) {
+            for (int x = centerX - 16; x <= centerX + 16; x++) {
+                int chunkX = Math.floorDiv(x, 16);
+                int chunkZ = Math.floorDiv(z, 16);
+                float[] heights = generator.getNewNoise(manager, chunkX * 16, chunkZ * 16, chunkBiomes);
+                int localX = Math.floorMod(x, 16);
+                int localZ = Math.floorMod(z, 16);
+                RealisticBiomeBase biome = chunkBiomes[localX * 16 + localZ];
+                System.out.printf(
+                        "%d,%d chunk=%d,%d height=%.3f biome=%s river=%.4f tunnel=%.4f%n",
+                        x,
+                        z,
+                        chunkX,
+                        chunkZ,
+                        heights[localX * 16 + localZ],
+                        biome.baseBiome.biomeName,
+                        manager.getRiverStrength(x, z),
+                        manager.getRiverTunnelStrength(x, z));
+            }
+        }
     }
 
     private static File previewConfig(String[] args) {

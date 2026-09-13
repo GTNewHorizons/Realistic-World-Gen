@@ -3,6 +3,7 @@ package rwg.support;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.biome.BiomeGenBase;
 
@@ -14,6 +15,7 @@ import rwg.biomes.realistic.ocean.RealisticBiomeOcean;
 import rwg.surface.SurfaceGrassland;
 import rwg.terrain.TerrainHighland;
 import rwg.terrain.TerrainMarsh;
+import rwg.terrain.TerrainSmallIsland;
 
 public class Support {
 
@@ -28,6 +30,8 @@ public class Support {
     public static BiomeLists hot;
     public static BiomeLists wet;
     public static RealisticBiomeBase volcanoIsland;
+    public static BiomeGenBase lavaCaveMarkerBiome;
+    public static Block lavaCaveSmolderingGrass;
     public static RealisticBiomeBase oceanShallowKelp;
     public static RealisticBiomeBase oceanShallowSnow;
     public static RealisticBiomeBase oceanShallowCold;
@@ -101,7 +105,7 @@ public class Support {
                 new RealisticBiomeSupport(
                         BiomeGenBase.mushroomIsland,
                         RWGBiomes.baseRiverWet,
-                        new TerrainHighland(6f, 120f, 65f, 200f),
+                        new TerrainSmallIsland(),
                         new SurfaceGrassland(
                                 BiomeGenBase.mushroomIsland.topBlock,
                                 BiomeGenBase.mushroomIsland.fillerBlock,
@@ -147,6 +151,8 @@ public class Support {
                 BiomeCategory.COLD,
                 BiomePlacement.SMALL);
         volcanoIsland = null;
+        lavaCaveMarkerBiome = null;
+        lavaCaveSmolderingGrass = null;
         oceanShallowSnow = new RealisticBiomeOcean(
                 RWGBiomes.baseOceanCold,
                 true,

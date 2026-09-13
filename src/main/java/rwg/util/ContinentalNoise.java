@@ -9,9 +9,10 @@ import rwg.config.ConfigRWG;
  */
 public class ContinentalNoise {
 
-    /** Outer radius used for volcano blending and exclusion zones. */
+    /** Outer radii used for landmark blending and biome footprints. */
     public static final double VOLCANO_ISLAND_RADIUS = 160D;
     public static final double VOLCANO_RADIUS = 130D;
+    public static final double LAVA_CAVE_INFLUENCE_RADIUS = 320D;
     private static final int POISSON_ROUNDS = 8;
     private static final double WARP_SCALE = 3600D;
     private static final double WARP_STRENGTH = 1800D;
@@ -23,11 +24,13 @@ public class ContinentalNoise {
     private static final double OVERLAP_CORRECTION_BASE = .75D;
     private static final double OVERLAP_CORRECTION_SLOPE = .46D;
     private static final long CONTINENT_VOLCANO_SEED_SALT = 0x082EFA98EC4E6C89L;
+    private static final long CONTINENT_LAVA_CAVE_SEED_SALT = 0x6A09E667F3BCC909L;
 
     private final long seed;
     private final PoissonPointNoise points;
     private final IslandPointNoise islands;
-    private final ContinentVolcanoNoise continentVolcanoes;
+    private final ContinentLandmarkNoise continentVolcanoes;
+    private final ContinentLandmarkNoise continentLavaCaves;
     private final double minimumContinentWidth;
     private final double continentWidthRange;
     private final double maximumIslandWidth;
@@ -69,7 +72,21 @@ public class ContinentalNoise {
             return new double[6];
         }
     };
+    private final ThreadLocal<double[]> continentLavaCaveSamples = new ThreadLocal<double[]>() {
+
+        @Override
+        protected double[] initialValue() {
+            return new double[6];
+        }
+    };
     private final ThreadLocal<double[]> volcanoCenterSamples = new ThreadLocal<double[]>() {
+
+        @Override
+        protected double[] initialValue() {
+            return new double[] { Double.NaN, Double.NaN, 0D, 0D };
+        }
+    };
+    private final ThreadLocal<double[]> lavaCaveCenterSamples = new ThreadLocal<double[]>() {
 
         @Override
         protected double[] initialValue() {
@@ -107,15 +124,24 @@ public class ContinentalNoise {
                 ConfigRWG.maximumIslandWidth,
                 ConfigRWG.minimumOceanWidth,
                 ConfigRWG.islandPlacementChance);
-        continentVolcanoes = new ContinentVolcanoNoise(
+        continentVolcanoes = new ContinentLandmarkNoise(
                 seed,
                 seed ^ CONTINENT_VOLCANO_SEED_SALT,
                 points,
                 minimumContinentWidth,
                 maximumContinentWidth,
                 voronoiRadius,
-                ConfigRWG.averageContinentVolcanoCount,
+                ConfigRWG.averageLandmarksPerTypeAndContinent,
                 VOLCANO_ISLAND_RADIUS);
+        continentLavaCaves = new ContinentLandmarkNoise(
+                seed,
+                seed ^ CONTINENT_LAVA_CAVE_SEED_SALT,
+                points,
+                minimumContinentWidth,
+                maximumContinentWidth,
+                voronoiRadius,
+                ConfigRWG.averageLandmarksPerTypeAndContinent,
+                LAVA_CAVE_INFLUENCE_RADIUS);
 
         double[] origin = new double[5];
         points.sample(0D, 0D, origin);
@@ -208,7 +234,13 @@ public class ContinentalNoise {
         result.volcanoKey = Long.MIN_VALUE;
         result.volcanoCenterX = 0D;
         result.volcanoCenterZ = 0D;
-        if (continent >= 0D && ConfigRWG.averageContinentVolcanoCount > 0f) {
+        result.lavaCave = false;
+        result.lavaCaveKey = Long.MIN_VALUE;
+        result.lavaCaveCenterX = 0D;
+        result.lavaCaveCenterZ = 0D;
+        result.lavaCaveLocalX = 0f;
+        result.lavaCaveLocalZ = 0f;
+        if (continent >= 0D && ConfigRWG.averageLandmarksPerTypeAndContinent > 0f) {
             double[] volcano = continentVolcanoSamples.get();
             continentVolcanoes.sample(warpedX + offsetX, warpedY + offsetY, volcano);
             if (Double.isFinite(volcano[0])) {
@@ -217,7 +249,7 @@ public class ContinentalNoise {
                 double localZ = y - center[3];
                 if (localX * localX + localZ * localZ <= VOLCANO_ISLAND_RADIUS * VOLCANO_ISLAND_RADIUS) {
                     result.volcano = true;
-                    result.volcanoKey = ContinentVolcanoNoise.candidateKey(
+                    result.volcanoKey = ContinentLandmarkNoise.candidateKey(
                             seed ^ CONTINENT_VOLCANO_SEED_SALT,
                             (int) volcano[3],
                             (int) volcano[4],
@@ -226,6 +258,25 @@ public class ContinentalNoise {
                     result.volcanoCenterZ = center[3];
                     result.islandLocalX = (float) localX;
                     result.islandLocalZ = (float) localZ;
+                }
+            }
+            double[] lavaCave = continentLavaCaveSamples.get();
+            continentLavaCaves.sample(warpedX + offsetX, warpedY + offsetY, lavaCave);
+            if (Double.isFinite(lavaCave[0])) {
+                double[] center = getLandmarkCenter(lavaCave[1], lavaCave[2], lavaCaveCenterSamples.get());
+                double localX = x - center[2];
+                double localZ = y - center[3];
+                if (localX * localX + localZ * localZ <= LAVA_CAVE_INFLUENCE_RADIUS * LAVA_CAVE_INFLUENCE_RADIUS) {
+                    result.lavaCave = true;
+                    result.lavaCaveKey = ContinentLandmarkNoise.candidateKey(
+                            seed ^ CONTINENT_LAVA_CAVE_SEED_SALT,
+                            (int) lavaCave[3],
+                            (int) lavaCave[4],
+                            (int) lavaCave[5]);
+                    result.lavaCaveCenterX = center[2];
+                    result.lavaCaveCenterZ = center[3];
+                    result.lavaCaveLocalX = (float) localX;
+                    result.lavaCaveLocalZ = (float) localZ;
                 }
             }
         }
@@ -325,8 +376,28 @@ public class ContinentalNoise {
         return (long) Math.round(sample.volcanoCenterX) << 32 | Math.round(sample.volcanoCenterZ) & 0xffffffffL;
     }
 
+    public long getLavaCaveCoordinates(int x, int y) {
+        LandformSample sample = sampleLandform(x, y);
+        if (!sample.lavaCave) return Long.MIN_VALUE;
+        return (long) Float.floatToRawIntBits(sample.lavaCaveLocalX) << 32
+                | Float.floatToRawIntBits(sample.lavaCaveLocalZ) & 0xffffffffL;
+    }
+
+    public long getLavaCaveSeedKey(int x, int y) {
+        return sampleLandform(x, y).lavaCaveKey;
+    }
+
+    public long getLavaCaveCenterCoordinates(int x, int y) {
+        LandformSample sample = sampleLandform(x, y);
+        if (!sample.lavaCave) return Long.MIN_VALUE;
+        return (long) Math.round(sample.lavaCaveCenterX) << 32 | Math.round(sample.lavaCaveCenterZ) & 0xffffffffL;
+    }
+
     private double[] getVolcanoCenter(double seedX, double seedZ) {
-        double[] center = volcanoCenterSamples.get();
+        return getLandmarkCenter(seedX, seedZ, volcanoCenterSamples.get());
+    }
+
+    private double[] getLandmarkCenter(double seedX, double seedZ, double[] center) {
         if (center[0] == seedX && center[1] == seedZ) return center;
         double centerX = seedX - offsetX;
         double centerZ = seedZ - offsetY;
@@ -379,5 +450,11 @@ public class ContinentalNoise {
         private long volcanoKey;
         private double volcanoCenterX;
         private double volcanoCenterZ;
+        private boolean lavaCave;
+        private long lavaCaveKey;
+        private double lavaCaveCenterX;
+        private double lavaCaveCenterZ;
+        private float lavaCaveLocalX;
+        private float lavaCaveLocalZ;
     }
 }

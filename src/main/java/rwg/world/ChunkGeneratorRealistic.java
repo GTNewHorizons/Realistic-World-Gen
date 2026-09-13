@@ -45,7 +45,10 @@ import rwg.biomes.realistic.ocean.RealisticBiomeIslandVolcano;
 import rwg.biomes.realistic.ocean.RealisticBiomeOcean;
 import rwg.config.ConfigRWG;
 import rwg.deco.DecoClay;
+import rwg.map.LavaCaveLandmark;
 import rwg.support.EtFuturumCaveVines;
+import rwg.support.LandmarkDecorations;
+import rwg.support.LargeTreeWorldgenCompat;
 import rwg.support.Support;
 import rwg.util.CanyonColor;
 import rwg.util.CellNoise;
@@ -54,6 +57,8 @@ import rwg.util.NoiseGenerator;
 import rwg.util.NoiseSelector;
 
 public class ChunkGeneratorRealistic implements IChunkProvider {
+
+    private static final float MOUNTAIN_CHAIN_INFLUENCE_RADIUS = 48f;
 
     private final Random rand;
     private final Random mapRand;
@@ -90,6 +95,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
     private final float[][] smallRender;
     private final float[] testHeight;
     private final float[] mountainChainWeight;
+    private final float[] mountainChainRiverHost;
     private final float[] riverStrength;
     private final float[] riverSample;
     private final float[] continentValues;
@@ -99,6 +105,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
 
     private final long worldSeed;
     private final EtFuturumCaveVines etFuturumCaveVines;
+    private final LandmarkDecorations landmarkDecorations;
 
     private final WorldGenMinable ore_dirt = new WorldGenMinable(Blocks.dirt, 32);
     private final WorldGenMinable ore_gravel = new WorldGenMinable(Blocks.gravel, 32);
@@ -145,6 +152,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
         mapRand = new Random(l);
         worldSeed = l;
         etFuturumCaveVines = mapFeatures ? EtFuturumCaveVines.create() : null;
+        landmarkDecorations = mapFeatures ? LandmarkDecorations.create() : null;
 
         Map<String, String> m = new HashMap<>();
         m.put("size", "0");
@@ -185,6 +193,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
         smallRender = new float[625][256];
         testHeight = new float[256];
         mountainChainWeight = new float[256];
+        mountainChainRiverHost = new float[256];
         riverStrength = new float[256];
         riverSample = new float[4];
         continentValues = new float[256];
@@ -239,6 +248,13 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
             ((RealisticBiomeIslandVolcano) Support.volcanoIsland)
                     .generateMagmaChamber(chunkBlocks, chunkMetadata, cx, cy, cmr);
         }
+        if (continental) {
+            LavaCaveLandmark.generate(chunkBlocks, chunkMetadata, cx, cy, cmr, perlin, cell);
+        }
+
+        if (continental && Support.lavaCaveMarkerBiome != null) {
+            markLavaCaveOpeningBiome(cx, cy, cmr);
+        }
 
         Chunk chunk = new Chunk(this.worldObj, chunkBlocks, chunkMetadata, cx, cy);
         byte[] abyte1 = chunk.getBiomeArray();
@@ -248,6 +264,21 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
         chunk.generateSkylightMap();
 
         return chunk;
+    }
+
+    private void markLavaCaveOpeningBiome(int chunkX, int chunkZ, ChunkManagerRealistic manager) {
+        for (int index = 0; index < baseBiomesList.length; index++) {
+            int worldX = chunkX * 16 + (index & 15);
+            int worldZ = chunkZ * 16 + (index >> 4);
+            if (manager.getVolcanoVicinityCoordinates(worldX, worldZ) != Long.MIN_VALUE) continue;
+            long cave = manager.getLavaCaveCoordinates(worldX, worldZ);
+            if (cave != Long.MIN_VALUE && LavaCaveLandmark.isMarkerBiome(
+                    perlin,
+                    ContinentalNoise.unpackVolcanoX(cave),
+                    ContinentalNoise.unpackVolcanoY(cave))) {
+                baseBiomesList[index] = Support.lavaCaveMarkerBiome;
+            }
+        }
     }
 
     public void generateTerrain(ChunkManagerRealistic cmr, int cx, int cy, Block[] blocks, byte[] metadata,
@@ -480,6 +511,8 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
                         }
                     }
                 }
+                mountainChainRiverHost[i * 16 + j] = Math
+                        .max(mountainChainWeight[i * 16 + j], nearbyMountainChainInfluence(i, j));
                 if (Support.volcanoIsland instanceof RealisticBiomeIslandVolcano) {
                     long coordinates = cmr.getVolcanoVicinityCoordinates(x + i, y + j);
                     if (coordinates != Long.MIN_VALUE) {
@@ -507,6 +540,16 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
                         }
                     }
                 }
+                if (continental && cmr.getVolcanoVicinityCoordinates(x + i, y + j) == Long.MIN_VALUE) {
+                    long caveCoordinates = cmr.getLavaCaveCoordinates(x + i, y + j);
+                    if (caveCoordinates != Long.MIN_VALUE) {
+                        testHeight[i * 16 + j] = LavaCaveLandmark.surfaceHeight(
+                                perlin,
+                                ContinentalNoise.unpackVolcanoX(caveCoordinates),
+                                ContinentalNoise.unpackVolcanoY(caveCoordinates),
+                                testHeight[i * 16 + j]);
+                    }
+                }
                 float uncarvedHeight = testHeight[i * 16 + j];
                 float carvedHeight = cmr.calculateRiver(x + i, y + j, river, uncarvedHeight, riverSample);
                 float fade = Math.max(0f, Math.min(1f, (mountainChainWeight[i * 16 + j] - 0.35f) / 0.65f));
@@ -518,11 +561,31 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
         return testHeight;
     }
 
+    private float nearbyMountainChainInfluence(int localX, int localZ) {
+        float maximum = 0f;
+        float radiusSquared = MOUNTAIN_CHAIN_INFLUENCE_RADIUS * MOUNTAIN_CHAIN_INFLUENCE_RADIUS;
+        for (int sampleX = 0; sampleX < sampleArraySize; sampleX++) {
+            int sampleLocalX = (sampleX - sampleSize) * 8 - 8;
+            float distanceX = sampleLocalX - localX;
+            for (int sampleZ = 0; sampleZ < sampleArraySize; sampleZ++) {
+                if (!(RealisticBiomeBase.getBiome(
+                        biomeData[sampleX * sampleArraySize + sampleZ]) instanceof RealisticBiomeMountainChain))
+                    continue;
+                int sampleLocalZ = (sampleZ - sampleSize) * 8 - 8;
+                float distanceZ = sampleLocalZ - localZ;
+                float distanceSquared = distanceX * distanceX + distanceZ * distanceZ;
+                if (distanceSquared >= radiusSquared) continue;
+                maximum = Math.max(maximum, 1f - (float) Math.sqrt(distanceSquared) / MOUNTAIN_CHAIN_INFLUENCE_RADIUS);
+            }
+        }
+        return maximum;
+    }
+
     private void carveMountainChainRivers(int chunkX, int chunkZ, Block[] blocks, byte[] metadata) {
         for (int localZ = 0; localZ < 16; localZ++) {
             for (int localX = 0; localX < 16; localX++) {
                 int terrainIndex = localX * 16 + localZ;
-                float mountainWeight = mountainChainWeight[terrainIndex];
+                float mountainWeight = mountainChainRiverHost[terrainIndex];
                 if (mountainWeight <= 0.10f) continue;
 
                 int worldX = chunkX * 16 + localX;
@@ -770,7 +833,11 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
                 int i2 = x + rand.nextInt(16) + 8;
                 int l4 = rand.nextInt(50);
                 int i8 = y + rand.nextInt(16) + 8;
-                gen_lakes_water.generate(worldObj, rand, i2, l4, i8);
+                if (continental && cmr.getLavaCaveCoordinates(i2, i8) != Long.MIN_VALUE) {
+                    gen_lakes_lava.generate(worldObj, rand, i2, l4, i8);
+                } else {
+                    gen_lakes_water.generate(worldObj, rand, i2, l4, i8);
+                }
             }
         }
 
@@ -933,7 +1000,12 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
                 if (b instanceof RealisticBiomeOcean) {
                     deferredOceanDecorations[bn] = borderNoise[bn];
                 } else {
-                    b.rDecorate(this.worldObj, this.rand, x, y, perlin, cell, borderNoise[bn], river);
+                    LargeTreeWorldgenCompat.beginBiomeDecoration();
+                    try {
+                        b.rDecorate(this.worldObj, this.rand, x, y, perlin, cell, borderNoise[bn], river);
+                    } finally {
+                        LargeTreeWorldgenCompat.endBiomeDecoration();
+                    }
                 }
 
                 if (b.baseBiome.temperature < 0.15f) {
@@ -947,6 +1019,10 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
 
         if (etFuturumCaveVines != null) {
             etFuturumCaveVines.decorate(worldObj, rand, cmr, x, y);
+        }
+
+        if (continental) {
+            LavaCaveLandmark.decorateSurface(worldObj, cmr, perlin, x, y, Support.lavaCaveSmolderingGrass);
         }
 
         // lazy fix
@@ -966,7 +1042,11 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
             int l21 = x + rand.nextInt(16) + 8;
             int k23 = rand.nextInt(rand.nextInt(120) + 8);
             int l24 = y + rand.nextInt(16) + 8;
-            gen_liquid_water.generate(worldObj, rand, l21, k23, l24);
+            if (continental && cmr.getLavaCaveCoordinates(l21, l24) != Long.MIN_VALUE) {
+                gen_liquid_lava.generate(worldObj, rand, l21, k23, l24);
+            } else {
+                gen_liquid_water.generate(worldObj, rand, l21, k23, l24);
+            }
         }
 
         for (int i19 = 0; i19 < 20; i19++) {
@@ -974,6 +1054,10 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
             int l23 = rand.nextInt(rand.nextInt(rand.nextInt(112) + 8) + 8);
             int i25 = y + rand.nextInt(16) + 8;
             gen_liquid_lava.generate(worldObj, rand, i22, l23, i25);
+        }
+
+        if (landmarkDecorations != null) {
+            landmarkDecorations.decorate(worldObj, cmr, perlin, x, y);
         }
 
         if (TerrainGen.populate(this, worldObj, rand, i, j, flag, PopulateChunkEvent.Populate.EventType.ANIMALS)) {

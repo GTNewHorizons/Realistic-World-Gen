@@ -20,6 +20,7 @@ import rwg.biomes.realistic.RealisticBiomeBase;
 import rwg.biomes.realistic.ocean.RealisticBiomeIslandVolcano;
 import rwg.biomes.realistic.ocean.RealisticBiomeOcean;
 import rwg.config.ConfigRWG;
+import rwg.map.LavaCaveLandmark;
 import rwg.support.Support;
 import rwg.support.Support.BiomePlacement;
 import rwg.util.CellNoise;
@@ -410,6 +411,37 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         return coordinates != Long.MIN_VALUE && canGenerateVolcanoAt(x, y) ? coordinates : Long.MIN_VALUE;
     }
 
+    public long getLavaCaveCoordinates(int x, int z) {
+        if (!continental) return Long.MIN_VALUE;
+        long coordinates = continents.getLavaCaveCoordinates(landmassX(x), landmassZ(z));
+        return coordinates != Long.MIN_VALUE && canGenerateLavaCaveAt(x, z) ? coordinates : Long.MIN_VALUE;
+    }
+
+    public long getLavaCaveCenterCoordinates(int x, int z) {
+        if (!continental) return Long.MIN_VALUE;
+        long center = continents.getLavaCaveCenterCoordinates(landmassX(x), landmassZ(z));
+        if (center == Long.MIN_VALUE || !canGenerateLavaCaveAt(x, z)) return Long.MIN_VALUE;
+        int centerX = (int) (center >> 32) - ConfigRWG.landmassOffsetX;
+        int centerZ = (int) center - ConfigRWG.landmassOffsetZ;
+        return (long) centerX << 32 | centerZ & 0xffffffffL;
+    }
+
+    private boolean canGenerateLavaCaveAt(int x, int z) {
+        int shiftedX = landmassX(x);
+        int shiftedZ = landmassZ(z);
+        long key = continents.getLavaCaveSeedKey(shiftedX, shiftedZ);
+        if (key == Long.MIN_VALUE) return false;
+        if (lavaCaveEligibilityMap.containsKey(key)) return lavaCaveEligibilityMap.get(key) == 1;
+
+        long center = continents.getLavaCaveCenterCoordinates(shiftedX, shiftedZ);
+        int centerX = (int) (center >> 32) - ConfigRWG.landmassOffsetX;
+        int centerZ = (int) center - ConfigRWG.landmassOffsetZ;
+        boolean eligible = getNoiseAt(centerX, centerZ) > 63f;
+        if (lavaCaveEligibilityMap.size() > 256) lavaCaveEligibilityMap.clear();
+        lavaCaveEligibilityMap.put(key, (byte) (eligible ? 1 : 2));
+        return eligible;
+    }
+
     private boolean canGenerateVolcanoAt(int x, int y) {
         if (!(Support.volcanoIsland instanceof RealisticBiomeIslandVolcano)) return false;
         int landmassX = landmassX(x);
@@ -487,6 +519,16 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     }
 
     public BiomeGenBase getBiomeGenAt(int par1, int par2) {
+        if (continental && Support.lavaCaveMarkerBiome != null
+                && getVolcanoVicinityCoordinates(par1, par2) == Long.MIN_VALUE) {
+            long cave = getLavaCaveCoordinates(par1, par2);
+            if (cave != Long.MIN_VALUE && LavaCaveLandmark.isMarkerBiome(
+                    perlin,
+                    ContinentalNoise.unpackVolcanoX(cave),
+                    ContinentalNoise.unpackVolcanoY(cave))) {
+                return Support.lavaCaveMarkerBiome;
+            }
+        }
         return getBiomeDataAt(par1, par2).baseBiome;
     }
 
@@ -630,6 +672,7 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     private TLongByteHashMap metaBiomeDataMap = new TLongByteHashMap();
     private TLongFloatHashMap volcanoBaseHeightMap = new TLongFloatHashMap();
     private TLongByteHashMap volcanoEligibilityMap = new TLongByteHashMap();
+    private TLongByteHashMap lavaCaveEligibilityMap = new TLongByteHashMap();
 
     private RealisticBiomeBase getOceanBiome(float continent, int climate, int x, int y) {
         if (continent < -SHALLOW_OCEAN_WIDTH) {
@@ -822,9 +865,10 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         if (st < 0f && biomeHeight > 59f) {
             float pX = x + (perlin.noise1(y / 240f) * 220f);
             float pY = y + (perlin.noise1(x / 240f) * 220f);
-            float r = cell.border(pX / 1250D, pY / 1250D, 50D / 1300D, 1f);
-            return (biomeHeight * (r + 1f))
-                    + ((59f + perlin.noise2(x / 12f, y / 12f) * 2f + perlin.noise2(x / 8f, y / 8f) * 1.5f) * (-r));
+            float riverCarving = cell.border(pX / 1250D, pY / 1250D, 50D / 1300D, 1f);
+            return (biomeHeight * (riverCarving + 1f))
+                    + ((59f + perlin.noise2(x / 12f, y / 12f) * 2f + perlin.noise2(x / 8f, y / 8f) * 1.5f)
+                            * (-riverCarving));
         } else {
             return biomeHeight;
         }
@@ -832,13 +876,11 @@ public class ChunkManagerRealistic extends WorldChunkManager {
 
     public float calculateRiver(int x, int y, float st, float biomeHeight, float[] sample) {
         if (st >= 0f || biomeHeight <= 59f) return biomeHeight;
-        float riverBorder = sample[2];
-        if (Float.isNaN(riverBorder)) {
-            riverBorder = cell.border(sample[0] / 1250D, sample[1] / 1250D, 50D / 1300D, 1f);
-            sample[2] = riverBorder;
+        if (Float.isNaN(sample[2])) {
+            sample[2] = cell.border(sample[0] / 1250D, sample[1] / 1250D, 50D / 1300D, 1f);
             sample[3] = 59f + perlin.noise2(x / 12f, y / 12f) * 2f + perlin.noise2(x / 8f, y / 8f) * 1.5f;
         }
-        return (biomeHeight * (riverBorder + 1f)) + (sample[3] * (-riverBorder));
+        return (biomeHeight * (sample[2] + 1f)) + (sample[3] * (-sample[2]));
     }
 
     public float getRiverStrength(int x, int y) {

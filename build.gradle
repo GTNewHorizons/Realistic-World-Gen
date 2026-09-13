@@ -13,6 +13,9 @@ sourceSets {
 
 dependencies {
     api('ganymedes01.etfuturum:Et-Futurum-Requiem:2.6.58-GTNH:dev')
+    api('com.github.GTNewHorizons:LootGames:2.2.14:dev')
+    api('com.github.GTNewHorizons:Natura:2.8.24:dev')
+    api('com.github.GTNewHorizons:twilightforest:2.7.40:dev')
     api(rfg.deobf('curse.maven:witchery-69673:2234410'))
     previewImplementation('tools.profiler:async-profiler:4.5')
 }
