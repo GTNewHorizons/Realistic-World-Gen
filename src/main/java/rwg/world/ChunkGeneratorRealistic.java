@@ -257,10 +257,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
         }
 
         Chunk chunk = new Chunk(this.worldObj, chunkBlocks, chunkMetadata, cx, cy);
-        byte[] abyte1 = chunk.getBiomeArray();
-        for (k = 0; k < abyte1.length; ++k) {
-            abyte1[k] = (byte) this.baseBiomesList[k].biomeID;
-        }
+        ChunkBiomeArrayCompat.setBiomes(chunk, baseBiomesList);
         chunk.generateSkylightMap();
 
         return chunk;

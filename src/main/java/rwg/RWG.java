@@ -23,7 +23,12 @@ import rwg.handlers.LoginHandler;
 import rwg.support.Support;
 import rwg.world.WorldTypeRealistic;
 
-@Mod(modid = "RWG", name = "RealisticWorldGen", version = Tags.VERSION, acceptableRemoteVersions = "*")
+@Mod(
+        modid = "RWG",
+        name = "RealisticWorldGen",
+        version = Tags.VERSION,
+        dependencies = "required-after:endlessids",
+        acceptableRemoteVersions = "*")
 public class RWG {
 
     @Instance("RWG")

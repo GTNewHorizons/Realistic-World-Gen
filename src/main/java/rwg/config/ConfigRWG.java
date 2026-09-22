@@ -12,8 +12,8 @@ import cpw.mods.fml.relauncher.FMLInjectionData;
 public class ConfigRWG {
 
     private static final String CONTINENTAL_CATEGORY = "Continental RWG";
-    private static final int[] DEFAULT_BIOME_IDS = { 200, 202, 205, 207, 209, 211, 213, 214, 216, 218, 237, 223, 224,
-            225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 240 };
+    private static final int[] DEFAULT_BIOME_IDS = { 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312,
+            313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325 };
 
     public static Configuration config;
     public static int[] biomeIDs = new int[26];
