@@ -53,16 +53,22 @@ public class Support {
             switch (cat) {
                 case SNOW:
                     biomes_snow.add(b);
+                    break;
                 case COLD:
                     biomes_cold.add(b);
+                    break;
                 case HOT:
                     biomes_hot.add(b);
+                    break;
                 case WET:
                     biomes_wet.add(b);
+                    break;
                 case SMALL:
                     biomes_small.add(b);
+                    break;
                 case TEST:
                     biomes_test.add(b);
+                    break;
             }
         } catch (Error e) {
             System.out.println("RWG Support: failed to add biome");
