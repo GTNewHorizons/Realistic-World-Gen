@@ -127,8 +127,9 @@ public class ChunkManagerRealistic extends WorldChunkManager {
             wetEnabled = true;
         }
 
+        // Legacy threshold kept so existing worlds generate the same; fixed lists can hold a single small biome.
         smallEnabled = false;
-        if (biomes_smallLength > 1) {
+        if (biomes_smallLength > (legacy ? 1 : 0)) {
             smallEnabled = true;
         }
     }
