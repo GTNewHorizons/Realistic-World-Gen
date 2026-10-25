@@ -182,19 +182,19 @@ public class Support {
     }
 
     public static void rebuildExtremeBorderMountains() {
-        snow.veryHotBorder.clear();
-        cold.veryHotBorder.clear();
-        hot.veryColdBorder.clear();
-        wet.veryColdBorder.clear();
-        addExtremeBorderMountains(snow.hotBorder, snow.veryHotBorder);
-        addExtremeBorderMountains(cold.hotBorder, cold.veryHotBorder);
-        addExtremeBorderMountains(hot.coldBorder, hot.veryColdBorder);
-        addExtremeBorderMountains(wet.coldBorder, wet.veryColdBorder);
+        rebuildExtremeBorderMountains(snow.hotBorder, snow.veryHotBorder);
+        rebuildExtremeBorderMountains(cold.hotBorder, cold.veryHotBorder);
+        rebuildExtremeBorderMountains(hot.coldBorder, hot.veryColdBorder);
+        rebuildExtremeBorderMountains(wet.coldBorder, wet.veryColdBorder);
     }
 
-    private static void addExtremeBorderMountains(List<RealisticBiomeBase> source, List<RealisticBiomeBase> target) {
-        for (RealisticBiomeBase biome : source) {
-            target.add(RealisticBiomeMountainChain.forBiome(biome));
+    private static void rebuildExtremeBorderMountains(List<RealisticBiomeBase> fallback,
+            List<RealisticBiomeBase> target) {
+        List<RealisticBiomeBase> biomes = target.isEmpty() ? fallback : new ArrayList<RealisticBiomeBase>(target);
+        target.clear();
+        for (RealisticBiomeBase biome : biomes) {
+            target.add(
+                    biome instanceof RealisticBiomeMountainChain ? biome : RealisticBiomeMountainChain.forBiome(biome));
         }
     }
 

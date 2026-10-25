@@ -592,13 +592,17 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
                 if (tunnel <= 0f && junction <= 0f) continue;
 
                 int surface = Math.min(255, (int) testHeight[terrainIndex]);
-                float tunnelCurve = (float) Math.sqrt(Math.max(0f, tunnel));
+                float mountainHost = smoothstep((mountainWeight - 0.10f) / 0.40f);
+                float tunnelStrength = tunnel * mountainHost;
+                // Treat both river width and the mountain-biome edge as radii of the
+                // opening. This closes a tunnel as a rounded cap instead of ending it
+                // with the full cross-section at the host threshold.
+                float tunnelCurve = (float) Math.sqrt(Math.max(0f, tunnelStrength * (2f - tunnelStrength)));
                 int tunnelFloor = 62 - Math.round(tunnelCurve * 4f);
                 int tunnelCeiling = 62 + Math.round(tunnelCurve * 11f);
                 int caveFloor = tunnelFloor;
                 int caveCeiling = tunnelCeiling;
 
-                float mountainHost = smoothstep((mountainWeight - 0.10f) / 0.40f);
                 float overheadHost = smoothstep((surface - 76f) / 24f);
                 float chamberStrength = junction * mountainHost * overheadHost;
                 if (chamberStrength > 0f) {

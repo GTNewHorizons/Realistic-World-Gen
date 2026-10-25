@@ -106,25 +106,25 @@ public class SupportBOP {
                 BiomeCategory.HOT);
 
         // BOREAL FOREST
-        Support.addBiome(
-                new RealisticBiomeSupport(
-                        BOPCBiomes.borealForest,
-                        RWGBiomes.baseRiverCold,
-                        new TerrainMountainSpikes(),
-                        new SurfaceMountainSnow(
-                                BOPCBiomes.borealForest.topBlock,
-                                BOPCBiomes.borealForest.fillerBlock,
-                                true,
-                                Blocks.sand,
-                                0.45f,
-                                1.5f,
-                                60f,
-                                65f,
-                                0.4f,
-                                130f,
-                                50f,
-                                1.5f)),
-                BiomeCategory.SNOW);
+        RealisticBiomeSupport borealForest = new RealisticBiomeSupport(
+                BOPCBiomes.borealForest,
+                RWGBiomes.baseRiverCold,
+                new TerrainMountainSpikes(),
+                new SurfaceMountainSnow(
+                        BOPCBiomes.borealForest.topBlock,
+                        BOPCBiomes.borealForest.fillerBlock,
+                        true,
+                        Blocks.sand,
+                        0.45f,
+                        1.5f,
+                        60f,
+                        65f,
+                        0.4f,
+                        130f,
+                        50f,
+                        1.5f));
+        Support.addBiome(borealForest, BiomeCategory.SNOW, BiomePlacement.HOT_BORDER);
+        Support.addBiome(borealForest, BiomeCategory.SNOW, BiomePlacement.VERY_HOT_BORDER);
 
         // BRUSHLAND
         Support.addBiome(
@@ -756,6 +756,21 @@ public class SupportBOP {
          * Blocks.stone, Blocks.cobblestone) ) );
          */
 
+        // TEMPERATE RAINFOREST
+        Support.addBiome(
+                new RealisticBiomeSupport(
+                        BOPCBiomes.temperateRainforest,
+                        RWGBiomes.baseRiverWet,
+                        new TerrainMountainRiver(),
+                        new SurfaceMountainStone(
+                                BOPCBiomes.temperateRainforest.topBlock,
+                                BOPCBiomes.temperateRainforest.fillerBlock,
+                                false,
+                                null,
+                                0.45f)),
+                BiomeCategory.COLD,
+                BiomePlacement.HOT_BORDER);
+
         // TROPICAL RAINFOREST
         Support.addBiome(
                 new RealisticBiomeSupport(
@@ -835,18 +850,17 @@ public class SupportBOP {
                 BiomePlacement.SMALL);
 
         // TUNDRA
-        Support.addBiome(
-                new RealisticBiomeSupport(
-                        BOPCBiomes.tundra,
-                        RWGBiomes.baseRiverIce,
-                        new TerrainGrasslandHills(90f, 180f, 13f, 100f, 38f, 260f, 71f),
-                        new SurfaceGrassland(
-                                BOPCBiomes.tundra.topBlock,
-                                BOPCBiomes.tundra.fillerBlock,
-                                Blocks.stone,
-                                Blocks.cobblestone)),
-                BiomeCategory.SNOW,
-                BiomePlacement.HOT_BORDER);
+        RealisticBiomeSupport tundra = new RealisticBiomeSupport(
+                BOPCBiomes.tundra,
+                RWGBiomes.baseRiverIce,
+                new TerrainGrasslandHills(90f, 180f, 13f, 100f, 38f, 260f, 71f),
+                new SurfaceGrassland(
+                        BOPCBiomes.tundra.topBlock,
+                        BOPCBiomes.tundra.fillerBlock,
+                        Blocks.stone,
+                        Blocks.cobblestone));
+        Support.addBiome(tundra, BiomeCategory.SNOW, BiomePlacement.HOT_BORDER);
+        Support.addBiome(tundra, BiomeCategory.SNOW, BiomePlacement.VERY_HOT_BORDER);
 
         // WASTELAND
         /*
