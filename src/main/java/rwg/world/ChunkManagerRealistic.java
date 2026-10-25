@@ -1047,32 +1047,20 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     }
 
     public boolean areBiomesViable(int x, int y, int par3, List par4List) {
-        float centerNoise = getNoiseAt(x, y);
-        if (centerNoise < 62) {
-            return false;
-        }
-
-        float lowestNoise = centerNoise;
-        float highestNoise = centerNoise;
+        int radius = Math.min(32, Math.max(0, par3));
+        float lowestNoise = Float.POSITIVE_INFINITY;
+        float highestNoise = Float.NEGATIVE_INFINITY;
         for (int i = -2; i <= 2; i++) {
             for (int j = -2; j <= 2; j++) {
-                if (i != 0 && j != 0) {
-                    float n = getNoiseAt(x + i * 16, y + j * 16);
-                    if (n < lowestNoise) {
-                        lowestNoise = n;
-                    }
-                    if (n > highestNoise) {
-                        highestNoise = n;
-                    }
-                }
+                int sampleX = x + i * radius / 2;
+                int sampleZ = y + j * radius / 2;
+                float noise = getNoiseAt(sampleX, sampleZ);
+                if (noise < 63f) return false;
+                if (noise < lowestNoise) lowestNoise = noise;
+                if (noise > highestNoise) highestNoise = noise;
             }
         }
-
-        if (highestNoise - lowestNoise < 22) {
-            return true;
-        }
-
-        return false;
+        return highestNoise - lowestNoise < 8f;
     }
 
     public ChunkPosition findBiomePosition(int p_150795_1_, int p_150795_2_, int p_150795_3_, List p_150795_4_,
