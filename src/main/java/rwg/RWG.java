@@ -14,6 +14,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import rwg.biomes.base.BaseBiomes;
+import rwg.commands.RwgBiomeListsCommand;
 import rwg.commands.RwgBugInfoCommand;
 import rwg.commands.RwgNoiseCommand;
 import rwg.config.ConfigRWG;
@@ -59,5 +60,6 @@ public class RWG {
 
         manager.registerCommand(new RwgNoiseCommand());
         manager.registerCommand(new RwgBugInfoCommand());
+        manager.registerCommand(new RwgBiomeListsCommand());
     }
 }

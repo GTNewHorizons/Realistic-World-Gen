@@ -14,6 +14,7 @@ import net.minecraft.world.biome.WorldChunkManager;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import rwg.biomes.realistic.RealisticBiomeBase;
 import rwg.support.Support;
+import rwg.support.Support.BiomeCategory;
 import rwg.util.CellNoise;
 import rwg.util.NoiseGenerator;
 import rwg.util.NoiseSelector;
@@ -106,12 +107,13 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         biomes_hot.add(RealisticBiomeBase.canyon);
         biomes_hot.add(RealisticBiomeBase.mesa);
 
-        biomes_snow.addAll(Support.biomes_snow);
-        biomes_cold.addAll(Support.biomes_cold);
-        biomes_hot.addAll(Support.biomes_hot);
-        biomes_wet.addAll(Support.biomes_wet);
-        biomes_small.addAll(Support.biomes_small);
-        biomes_test.addAll(Support.biomes_test);
+        boolean legacy = RwgWorldSavedData.getBiomeListVersion(par1World) == RwgWorldSavedData.BIOME_LIST_LEGACY;
+        biomes_snow.addAll(Support.getBiomes(BiomeCategory.SNOW, legacy));
+        biomes_cold.addAll(Support.getBiomes(BiomeCategory.COLD, legacy));
+        biomes_hot.addAll(Support.getBiomes(BiomeCategory.HOT, legacy));
+        biomes_wet.addAll(Support.getBiomes(BiomeCategory.WET, legacy));
+        biomes_small.addAll(Support.getBiomes(BiomeCategory.SMALL, legacy));
+        biomes_test.addAll(Support.getBiomes(BiomeCategory.TEST, legacy));
 
         biomes_snowLength = biomes_snow.size();
         biomes_coldLength = biomes_cold.size();
