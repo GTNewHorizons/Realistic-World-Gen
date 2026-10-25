@@ -11,6 +11,11 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class VillageMaterials {
 
+    // EndlessIDs 1.7.4 requires a 256 constant in this class initializer for its legacy RWG compatibility mixin.
+    // The mixin expands this otherwise-unused array to 65536; biome materials themselves are stored in the map below.
+    @SuppressWarnings("unused")
+    private static final byte[] ENDLESS_IDS_COMPATIBILITY = new byte[256];
+
     private static final Map<Integer, VillageMaterialData> dataByBiome = new HashMap<Integer, VillageMaterialData>();
 
     public static void registerVillageMaterial(VillageMaterialData data) {
