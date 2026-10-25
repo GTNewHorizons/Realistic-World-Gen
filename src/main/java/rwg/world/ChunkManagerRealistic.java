@@ -78,7 +78,7 @@ public class ChunkManagerRealistic extends WorldChunkManager {
             return new double[2];
         }
     };
-    private float climateWidth = 1820f;
+    private float climateWidth = 1400f;
     private float biomeWidth = 500f;
     private boolean continental;
     private ContinentalNoise continents;
@@ -126,7 +126,7 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     }
 
     public ChunkManagerRealistic(long seed, boolean continental) {
-        this(seed, continental, 1820f, 500f);
+        this(seed, continental, 1400f, 500f);
     }
 
     public ChunkManagerRealistic(long seed, boolean continental, float climateWidth, float biomeWidth) {
