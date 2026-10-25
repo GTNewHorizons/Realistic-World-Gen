@@ -29,7 +29,7 @@ public class ConfigRWG {
     public static float maximumContinentWidth = 2700f;
     public static float averageOceanWidth = 100f;
     public static float minimumOceanWidth = 50f;
-    public static float maximumOceanFraction = 1.0f;
+    public static float maximumOceanFraction = 0.4f;
     public static float minimumIslandWidth = 300f;
     public static float maximumIslandWidth = 600f;
     public static float islandPlacementChance = 0.30f;
@@ -126,11 +126,11 @@ public class ConfigRWG {
             maximumOceanFraction = config.getFloat(
                     "Maximum Ocean Fraction",
                     CONTINENTAL_CATEGORY,
-                    1.0f,
+                    0.4f,
                     0f,
                     1f,
                     "Approximate upper limit on the fraction of the world covered by ocean. 1.0 disables the limit. "
-                            + "For reference, the default settings produce roughly 50% ocean. Lower values dilate "
+                            + "Lower values dilate "
                             + "continents after placement, so oceans that normally separate continents may become "
                             + "interior seas. The result is approximate and varies with the world seed and the other "
                             + "continent settings. "
