@@ -47,8 +47,6 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.biome.BiomeGenBase;
 
-import com.google.common.base.Optional;
-
 import one.profiler.AsyncProfiler;
 import rwg.biomes.base.BaseBiomes;
 import rwg.biomes.realistic.RealisticBiomeBase;
@@ -59,7 +57,6 @@ import rwg.support.RealisticBiomeSupport;
 import rwg.support.Support;
 import rwg.support.Support.BiomePlacement;
 import rwg.support.SupportBOP;
-import rwg.support.SupportEBXL;
 import rwg.support.SupportTC;
 import sun.misc.Unsafe;
 
@@ -91,7 +88,6 @@ public final class RWGPreviewTool {
         Support.init(false);
         initAddonStubs();
         SupportBOP.init();
-        SupportEBXL.init();
         SupportTC.init();
         Support.rebuildExtremeBorderMountains();
         for (String argument : args) {
@@ -171,11 +167,6 @@ public final class RWGPreviewTool {
             for (Field field : Class.forName("biomesoplenty.api.content.BOPCBlocks").getFields()) {
                 if (Modifier.isStatic(field.getModifiers()) && field.getType() == Block.class) {
                     field.set(null, field.getName().contains("ash") ? Blocks.sand : Blocks.stone);
-                }
-            }
-            for (Field field : Class.forName("extrabiomes.api.BiomeManager").getFields()) {
-                if (Modifier.isStatic(field.getModifiers()) && field.getType() == Optional.class) {
-                    field.set(null, Optional.of(debugBiome(field.getName(), "EBXL")));
                 }
             }
             debugBiome("taintedLand", "Thaumcraft");
