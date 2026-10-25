@@ -1,5 +1,8 @@
 package rwg.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.init.Blocks;
 import net.minecraftforge.event.terraingen.BiomeEvent;
 
@@ -8,16 +11,16 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class VillageMaterials {
 
-    private static VillageMaterialData[] dataList = new VillageMaterialData[256];
+    private static final Map<Integer, VillageMaterialData> dataByBiome = new HashMap<Integer, VillageMaterialData>();
 
     public static void registerVillageMaterial(VillageMaterialData data) {
-        dataList[data.biomeID] = data;
+        dataByBiome.put(data.biomeID, data);
     }
 
     @SubscribeEvent
     public void getVillageBlockID(BiomeEvent.GetVillageBlockID event) {
         if (event.biome != null) {
-            VillageMaterialData vmd = this.dataList[event.biome.biomeID];
+            VillageMaterialData vmd = dataByBiome.get(event.biome.biomeID);
 
             if (vmd != null) {
                 if (event.original == Blocks.log) {
@@ -62,7 +65,7 @@ public class VillageMaterials {
     @SubscribeEvent
     public void getVillageBlockMeta(BiomeEvent.GetVillageBlockMeta event) {
         if (event.biome != null) {
-            VillageMaterialData vmd = this.dataList[event.biome.biomeID];
+            VillageMaterialData vmd = dataByBiome.get(event.biome.biomeID);
 
             if (vmd != null) {
                 if (event.original == Blocks.log) {

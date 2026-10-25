@@ -61,10 +61,12 @@ import rwg.support.Support.BiomePlacement;
 import rwg.support.SupportBOP;
 import rwg.support.SupportEBXL;
 import rwg.support.SupportTC;
+import sun.misc.Unsafe;
 
 /** Offline world-generation preview used by {@code runPreview} and {@code runPerfCheck}. */
 public final class RWGPreviewTool {
 
+    private static final int EXTENDED_BIOME_COUNT = 65536;
     private static final int SIZE = 40960;
     private static final int BLOCKS_PER_PIXEL = 16;
     private static final int RESOLUTION = SIZE / BLOCKS_PER_PIXEL;
@@ -84,6 +86,7 @@ public final class RWGPreviewTool {
         File configFile = previewConfig(args);
         ConfigRWG.init(configFile);
         System.out.println("RWG preview config: " + configFile.getAbsolutePath());
+        ensureExtendedBiomeRegistry();
         BaseBiomes.load();
         Support.init(false);
         initAddonStubs();
@@ -135,6 +138,27 @@ public final class RWGPreviewTool {
             if (argument.startsWith("--config=")) return new File(argument.substring("--config=".length()));
         }
         return new File(System.getProperty("rwg.previewConfig", "run/client/config/RWG.cfg"));
+    }
+
+    /**
+     * The preview runs outside Forge, so the EndlessIDs transformer never gets an opportunity to enlarge
+     * BiomeGenBase's vanilla 256-entry registry. Mirror that one transformation before constructing configured
+     * biomes; all other preview code can then exercise the same extended IDs used in game.
+     */
+    private static void ensureExtendedBiomeRegistry() {
+        BiomeGenBase[] registry = BiomeGenBase.getBiomeGenArray();
+        if (registry.length >= EXTENDED_BIOME_COUNT) return;
+        try {
+            Field registryField = BiomeGenBase.class.getDeclaredField("biomeList");
+            Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+            unsafeField.setAccessible(true);
+            Unsafe unsafe = (Unsafe) unsafeField.get(null);
+            BiomeGenBase[] extended = Arrays.copyOf(registry, EXTENDED_BIOME_COUNT);
+            unsafe.putObjectVolatile(
+                    unsafe.staticFieldBase(registryField), unsafe.staticFieldOffset(registryField), extended);
+        } catch (ReflectiveOperationException exception) {
+            throw new IllegalStateException("Could not initialize the EndlessIDs biome registry for the preview", exception);
+        }
     }
 
     private static void initAddonStubs() {
