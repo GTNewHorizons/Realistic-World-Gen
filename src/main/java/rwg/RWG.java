@@ -16,6 +16,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import rwg.biomes.base.BaseBiomes;
 import rwg.commands.RwgBugInfoCommand;
 import rwg.commands.RwgNoiseCommand;
+import rwg.commands.SpeedCommand;
 import rwg.config.ConfigRWG;
 import rwg.data.RailcraftWorldgenFilter;
 import rwg.data.VillageMaterials;
@@ -68,5 +69,6 @@ public class RWG {
 
         manager.registerCommand(new RwgNoiseCommand());
         manager.registerCommand(new RwgBugInfoCommand());
+        manager.registerCommand(new SpeedCommand());
     }
 }

@@ -6,10 +6,13 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinBOPSacredOak",
+    "MixinEntityPlayer",
     "MixinNaturaRedwoodTreeGen",
     "MixinWorldGenLiquids",
     "MixinWitcheryComponent"
   ],
-  "client": [],
+  "client": [
+    "MixinEntityPlayerSP"
+  ],
   "server": []
 }
