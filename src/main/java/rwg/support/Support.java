@@ -7,12 +7,8 @@ import rwg.biomes.realistic.RealisticBiomeBase;
 
 public class Support {
 
-    public static ArrayList<RealisticBiomeBase> biomes_snow;
-    public static ArrayList<RealisticBiomeBase> biomes_cold;
-    public static ArrayList<RealisticBiomeBase> biomes_hot;
-    public static ArrayList<RealisticBiomeBase> biomes_wet;
-    public static ArrayList<RealisticBiomeBase> biomes_small;
-    public static ArrayList<RealisticBiomeBase> biomes_test;
+    private static ArrayList<RealisticBiomeSupport> biomes;
+    private static ArrayList<BiomeCategory> categories;
 
     public enum BiomeCategory {
         SNOW,
@@ -24,12 +20,8 @@ public class Support {
     }
 
     public static void init() {
-        biomes_snow = new ArrayList<RealisticBiomeBase>();
-        biomes_cold = new ArrayList<RealisticBiomeBase>();
-        biomes_hot = new ArrayList<RealisticBiomeBase>();
-        biomes_wet = new ArrayList<RealisticBiomeBase>();
-        biomes_small = new ArrayList<RealisticBiomeBase>();
-        biomes_test = new ArrayList<RealisticBiomeBase>();
+        biomes = new ArrayList<RealisticBiomeSupport>();
+        categories = new ArrayList<BiomeCategory>();
 
         if (Loader.isModLoaded("BiomesOPlenty")) {
             SupportBOP.init();
@@ -49,29 +41,22 @@ public class Support {
     }
 
     public static void addBiome(RealisticBiomeSupport b, BiomeCategory cat) {
-        try {
-            switch (cat) {
-                case SNOW:
-                    biomes_snow.add(b);
-                    break;
-                case COLD:
-                    biomes_cold.add(b);
-                    break;
-                case HOT:
-                    biomes_hot.add(b);
-                    break;
-                case WET:
-                    biomes_wet.add(b);
-                    break;
-                case SMALL:
-                    biomes_small.add(b);
-                    break;
-                case TEST:
-                    biomes_test.add(b);
-                    break;
+        biomes.add(b);
+        categories.add(cat);
+    }
+
+    /**
+     * Legacy lists reproduce the old switch fall-through, where a biome was added to its own category and every
+     * category after it. Existing worlds depend on that list order and size.
+     */
+    public static ArrayList<RealisticBiomeBase> getBiomes(BiomeCategory cat, boolean legacy) {
+        ArrayList<RealisticBiomeBase> result = new ArrayList<RealisticBiomeBase>();
+        for (int i = 0; i < biomes.size(); i++) {
+            BiomeCategory c = categories.get(i);
+            if (legacy ? c.ordinal() <= cat.ordinal() : c == cat) {
+                result.add(biomes.get(i));
             }
-        } catch (Error e) {
-            System.out.println("RWG Support: failed to add biome");
         }
+        return result;
     }
 }
