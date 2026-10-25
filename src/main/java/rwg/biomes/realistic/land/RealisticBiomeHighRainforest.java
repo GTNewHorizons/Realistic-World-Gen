@@ -24,7 +24,7 @@ import rwg.util.PoissonPointNoise;
 
 public class RealisticBiomeHighRainforest extends RealisticBiomeBase {
 
-    private static final double LARGE_TREE_SPACING = 24D;
+    private static final double LARGE_TREE_SPACING = 12D;
     private static final int LARGE_TREE_PLACEMENT_ROUNDS = 2;
     private static final long LARGE_TREE_SEED_SALT = 0x3C6EF372FE94F82BL;
 
