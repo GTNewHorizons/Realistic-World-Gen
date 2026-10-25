@@ -17,6 +17,7 @@ public class ConfigRWG {
     public static boolean generateUndergroundLakes = true;
     public static boolean generateUndergroundLavaLakes = true;
     public static boolean generateLargeThaumcraftBiomes = false;
+    public static boolean fixedBiomeListsForNewWorlds = true;
 
     public static void init(FMLPreInitializationEvent event) {
         config = new Configuration(event.getSuggestedConfigurationFile());
@@ -62,6 +63,11 @@ public class ConfigRWG {
             generateUndergroundLavaLakes = config.getBoolean("Generate Underground Lava Lakes", "Settings", true, "");
             generateLargeThaumcraftBiomes = config
                     .getBoolean("Generate large Thaumcraft biomes", "Settings", false, "");
+            fixedBiomeListsForNewWorlds = config.getBoolean(
+                    "Use fixed biome lists for new worlds",
+                    "Settings",
+                    true,
+                    "Only applies when a world is created. Existing worlds keep the biome lists they were generated with.");
 
         } catch (Exception e) {
             for (int c = 0; c < biomeIDs.length; c++) {
