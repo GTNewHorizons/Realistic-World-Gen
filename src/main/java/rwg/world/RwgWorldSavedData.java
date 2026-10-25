@@ -110,12 +110,7 @@ public class RwgWorldSavedData extends WorldSavedData {
             return BIOME_LIST_LEGACY;
         }
 
-        RwgWorldSavedData data = (RwgWorldSavedData) storage.loadData(RwgWorldSavedData.class, DATA_NAME);
-        if (data == null) {
-            data = new RwgWorldSavedData();
-            storage.setData(DATA_NAME, data);
-        }
-
+        RwgWorldSavedData data = loadOrCreate(storage);
         if (data.biomeListVersion == BIOME_LIST_UNKNOWN) {
             boolean isNewWorld = !world.getWorldInfo().isInitialized();
             data.biomeListVersion = isNewWorld && ConfigRWG.fixedBiomeListsForNewWorlds ? BIOME_LIST_FIXED
@@ -128,5 +123,27 @@ public class RwgWorldSavedData extends WorldSavedData {
         }
 
         return data.biomeListVersion;
+    }
+
+    /**
+     * Only takes effect on the next world load, since the chunk manager reads it once on construction.
+     */
+    public static boolean setBiomeListVersion(int version) {
+        WorldServer world = DimensionManager.getWorld(0);
+        if (world == null || world.mapStorage == null) return false;
+
+        RwgWorldSavedData data = loadOrCreate(world.mapStorage);
+        data.biomeListVersion = version;
+        data.markDirty();
+        return true;
+    }
+
+    private static RwgWorldSavedData loadOrCreate(MapStorage storage) {
+        RwgWorldSavedData data = (RwgWorldSavedData) storage.loadData(RwgWorldSavedData.class, DATA_NAME);
+        if (data == null) {
+            data = new RwgWorldSavedData();
+            storage.setData(DATA_NAME, data);
+        }
+        return data;
     }
 }
