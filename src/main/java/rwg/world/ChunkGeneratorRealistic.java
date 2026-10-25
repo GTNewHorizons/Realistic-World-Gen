@@ -94,6 +94,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
     private final float[][] hugeRender;
     private final float[][] smallRender;
     private final float[] testHeight;
+    private final float[] riverBedHeight;
     private final float[] mountainChainWeight;
     private final float[] mountainChainRiverHost;
     private final float[] riverStrength;
@@ -192,6 +193,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
         hugeRender = new float[81][256];
         smallRender = new float[625][256];
         testHeight = new float[256];
+        riverBedHeight = new float[256];
         mountainChainWeight = new float[256];
         mountainChainRiverHost = new float[256];
         riverStrength = new float[256];
@@ -549,6 +551,7 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
                 }
                 float uncarvedHeight = testHeight[i * 16 + j];
                 float carvedHeight = cmr.calculateRiver(x + i, y + j, river, uncarvedHeight, riverSample);
+                riverBedHeight[i * 16 + j] = carvedHeight;
                 float fade = Math.max(0f, Math.min(1f, (mountainChainWeight[i * 16 + j] - 0.35f) / 0.65f));
                 fade = fade * fade * (3f - 2f * fade);
                 testHeight[i * 16 + j] = carvedHeight + (uncarvedHeight - carvedHeight) * fade;
@@ -598,7 +601,8 @@ public class ChunkGeneratorRealistic implements IChunkProvider {
                 // opening. This closes a tunnel as a rounded cap instead of ending it
                 // with the full cross-section at the host threshold.
                 float tunnelCurve = (float) Math.sqrt(Math.max(0f, tunnelStrength * (2f - tunnelStrength)));
-                int tunnelFloor = 62 - Math.round(tunnelCurve * 4f);
+                int normalRiverFloor = Math.min(62, (int) Math.floor(riverBedHeight[terrainIndex]) + 1);
+                int tunnelFloor = Math.min(normalRiverFloor, 62 - Math.round(tunnelCurve * 4f));
                 int tunnelCeiling = 62 + Math.round(tunnelCurve * 11f);
                 int caveFloor = tunnelFloor;
                 int caveCeiling = tunnelCeiling;
