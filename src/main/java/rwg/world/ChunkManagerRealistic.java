@@ -36,12 +36,12 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     private static final float CLIMATE_WARP_STRENGTH_MULTIPLIER = .8f;
     private static final float BIOME_WARP_SCALE_MULTIPLIER = .4f;
     private static final float BIOME_WARP_STRENGTH_MULTIPLIER = .175f;
-    // Compensate for the spatial bias of the warped cell-noise values. Snow occupies approximately
-    // 25% less area than before, with the Cold/Hot boundary calibrated from preview coverage.
-    private static final float SNOW_CLIMATE_LIMIT = .16875f;
+    // Compensate for the spatial bias of the warped cell-noise values. The snow boundary includes 15% of the former
+    // cold interval, with the Cold/Hot boundary calibrated from preview coverage.
+    private static final float SNOW_CLIMATE_LIMIT = .2251875f;
     private static final float COLD_CLIMATE_LIMIT = .545f;
     private static final float HOT_CLIMATE_LIMIT = .78f;
-    private static final float THREE_CLIMATE_SNOW_LIMIT = .2475f;
+    private static final float THREE_CLIMATE_SNOW_LIMIT = .3039375f;
     private static final float THREE_CLIMATE_COLD_LIMIT = .62375f;
     private static final double CLIMATE_BORDER_DISTANCE_DIFFERENCE = 288D;
     private static final float LITTORAL_WIDTH = 432f;
@@ -78,7 +78,7 @@ public class ChunkManagerRealistic extends WorldChunkManager {
             return new double[2];
         }
     };
-    private float climateWidth = 1400f;
+    private float climateWidth = 1820f;
     private float biomeWidth = 500f;
     private boolean continental;
     private ContinentalNoise continents;
@@ -126,7 +126,7 @@ public class ChunkManagerRealistic extends WorldChunkManager {
     }
 
     public ChunkManagerRealistic(long seed, boolean continental) {
-        this(seed, continental, 1400f, 500f);
+        this(seed, continental, 1820f, 500f);
     }
 
     public ChunkManagerRealistic(long seed, boolean continental, float climateWidth, float biomeWidth) {
@@ -228,6 +228,11 @@ public class ChunkManagerRealistic extends WorldChunkManager {
         biomes_hot.add(RealisticBiomeBase.redDesertOasis);
         biomes_hot.add(RealisticBiomeBase.canyon);
         biomes_hot.add(RealisticBiomeBase.mesa);
+
+        biomes_wet.add(RealisticBiomeBase.rainForestHigh);
+        biomes_wet.add(RealisticBiomeBase.jungleHills);
+        biomes_wet.add(RealisticBiomeBase.jungleCanyon);
+        biomes_wet.add(RealisticBiomeBase.redwoodJungle);
 
         biomes_snow.addAll(Support.biomes_snow);
         biomes_cold.addAll(Support.biomes_cold);
