@@ -53,7 +53,6 @@ public class ConfigRWG {
 
         try {
             config.load();
-            renameOldProperties();
             biomeIDs[0] = config.get("biome ids", "00 Ice River", DEFAULT_BIOME_IDS[0], "Ice River").getInt();
             biomeIDs[1] = config.get("biome ids", "01 Cold River", DEFAULT_BIOME_IDS[1], "Cold River").getInt();
             biomeIDs[2] = config.get("biome ids", "02 Temperate River", DEFAULT_BIOME_IDS[2], "Temperate River")
@@ -246,47 +245,4 @@ public class ConfigRWG {
         }
     }
 
-    private static void renameOldProperties() {
-        config.moveProperty("Continental World", "Minimum Continent Width", CONTINENTAL_CATEGORY);
-        config.moveProperty("Continental World", "Maximum Continent Width", CONTINENTAL_CATEGORY);
-        config.moveProperty("Continental World", "Average Ocean Width", CONTINENTAL_CATEGORY);
-        config.moveProperty("Continental World", "Minimum Ocean Width", CONTINENTAL_CATEGORY);
-        config.moveProperty("Continental World", "Maximum Ocean Fraction", CONTINENTAL_CATEGORY);
-        config.moveProperty("Continental World", "Minimum Island Width", CONTINENTAL_CATEGORY);
-        config.moveProperty("Continental World", "Maximum Island Width", CONTINENTAL_CATEGORY);
-        config.moveProperty("Continental World", "Island Placement Chance", CONTINENTAL_CATEGORY);
-        config.moveProperty("Continental World", "Large Island Volcano Chance", CONTINENTAL_CATEGORY);
-        config.moveProperty("Continental World", "Average Volcano Count Per Continent", CONTINENTAL_CATEGORY);
-        config.renameProperty(
-                CONTINENTAL_CATEGORY,
-                "Average Volcano Count Per Continent",
-                "Average Landmarks Per Type And Continent");
-        config.moveProperty("Continental World", "Large Ocean Chance", CONTINENTAL_CATEGORY);
-        config.getCategory(CONTINENTAL_CATEGORY).remove("Large Ocean Chance");
-        config.renameProperty("biome ids", "00 rwg_riverIce", "00 Ice River");
-        config.renameProperty("biome ids", "01 rwg_riverCold", "01 Cold River");
-        config.renameProperty("biome ids", "02 rwg_riverTemperate", "02 Temperate River");
-        config.renameProperty("biome ids", "03 rwg_riverHot", "03 Hot River");
-        config.renameProperty("biome ids", "04 rwg_riverWet", "04 Wet River");
-        config.renameProperty("biome ids", "05 rwg_riverOasis", "05 River Oasis");
-        config.renameProperty("biome ids", "06 rwg_oceanIce", "06 Ice Ocean");
-        config.renameProperty("biome ids", "07 rwg_oceanCold", "07 Cold Ocean");
-        config.renameProperty("biome ids", "08 rwg_oceanTemperate", "08 Temperate Ocean");
-        config.renameProperty("biome ids", "09 rwg_oceanHot", "09 Hot Ocean");
-        config.renameProperty("biome ids", "10 rwg_oceanWet", "10 Wet Ocean");
-        config.renameProperty("biome ids", "11 rwg_oceanOasis", "11 Ocean Oasis");
-        config.renameProperty("biome ids", "12 rwg_snowDesert", "12 Snow Desert");
-        config.renameProperty("biome ids", "13 rwg_snowForest", "13 Snow Forest");
-        config.renameProperty("biome ids", "14 rwg_coldPlains", "14 Cold Plains");
-        config.renameProperty("biome ids", "15 rwg_coldForest", "15 Cold Forest");
-        config.renameProperty("biome ids", "16 rwg_hotPlains", "16 Hot Plains");
-        config.renameProperty("biome ids", "17 rwg_hotForest", "17 Hot Forest");
-        config.renameProperty("biome ids", "18 rwg_hotDesert", "18 Hot Desert");
-        config.renameProperty("biome ids", "19 rwg_plains", "19 Plains (RWG)");
-        config.renameProperty("biome ids", "20 rwg_tropical", "20 Tropical Island");
-        config.renameProperty("biome ids", "21 rwg_redwood", "21 Redwood");
-        config.renameProperty("biome ids", "22 rwg_jungle", "22 Jungle (RWG)");
-        config.renameProperty("biome ids", "23 rwg_oasis", "23 Oasis");
-        config.renameProperty("biome ids", "24 rwg_temperateForest", "24 Temperate Forest");
-    }
 }
