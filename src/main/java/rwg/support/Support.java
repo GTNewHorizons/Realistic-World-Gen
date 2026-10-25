@@ -113,17 +113,6 @@ public class Support {
                                 Blocks.cobblestone)),
                 BiomeCategory.WET,
                 BiomePlacement.SMALL_ISLAND);
-        addBiome(
-                new RealisticBiomeSupport(
-                        BiomeGenBase.jungle,
-                        RWGBiomes.baseRiverWet,
-                        new TerrainHighland(0f, 140f, 68f, 200f),
-                        new SurfaceGrassland(
-                                BiomeGenBase.jungle.topBlock,
-                                BiomeGenBase.jungle.fillerBlock,
-                                Blocks.stone,
-                                Blocks.cobblestone)),
-                BiomeCategory.WET);
         BiomeGenBase icePlainsSpikes = BiomeGenBase.getBiome(BiomeGenBase.icePlains.biomeID + 128);
         addBiome(
                 new RealisticBiomeSupport(

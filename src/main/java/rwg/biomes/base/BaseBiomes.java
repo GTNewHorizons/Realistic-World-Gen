@@ -40,6 +40,10 @@ public class BaseBiomes {
         RWGBiomes.baseOasis = new BaseBiomeRiver(ConfigRWG.biomeIDs[23], 5, "Oasis");
         RWGBiomes.baseTemperateForest = new BaseBiomeTemperateForest(ConfigRWG.biomeIDs[24], "Temperate Forest");
         RWGBiomes.baseJungleMesa = new BaseBiomeJungleMesa(ConfigRWG.biomeIDs[25], "Jungle Mesa");
+        RWGBiomes.baseHighRainforest = new BaseBiomeJungle(ConfigRWG.biomeIDs[26], "High Rainforest");
+        RWGBiomes.baseJungleHills = new BaseBiomeJungle(ConfigRWG.biomeIDs[27], "Jungle Hills");
+        RWGBiomes.baseJungleCanyon = new BaseBiomeJungle(ConfigRWG.biomeIDs[28], "Jungle Canyon");
+        RWGBiomes.baseRedwoodJungle = new BaseBiomeJungle(ConfigRWG.biomeIDs[29], "Redwood Jungle");
 
         System.arraycopy(
                 new BiomeGenBase[] { RWGBiomes.baseRiverIce, RWGBiomes.baseRiverCold, RWGBiomes.baseRiverTemperate,
@@ -50,7 +54,8 @@ public class BaseBiomes {
                         RWGBiomes.baseColdForest, RWGBiomes.baseHotPlains, RWGBiomes.baseHotForest,
                         RWGBiomes.baseHotDesert, RWGBiomes.basePlains, RWGBiomes.baseTropicalIsland,
                         RWGBiomes.baseRedwood, RWGBiomes.baseJungle, RWGBiomes.baseOasis, RWGBiomes.baseTemperateForest,
-                        RWGBiomes.baseJungleMesa },
+                        RWGBiomes.baseJungleMesa, RWGBiomes.baseHighRainforest, RWGBiomes.baseJungleHills,
+                        RWGBiomes.baseJungleCanyon, RWGBiomes.baseRedwoodJungle },
                 0,
                 RWG_BIOMES,
                 0,
@@ -96,6 +101,31 @@ public class BaseBiomes {
         BiomeDictionary.registerBiomeType(RWGBiomes.baseJungle, Type.HOT, Type.WET, Type.JUNGLE);
         BiomeDictionary
                 .registerBiomeType(RWGBiomes.baseJungleMesa, Type.HOT, Type.WET, Type.JUNGLE, Type.FOREST, Type.HILLS);
+        BiomeDictionary.registerBiomeType(
+                RWGBiomes.baseHighRainforest,
+                Type.HOT,
+                Type.WET,
+                Type.JUNGLE,
+                Type.FOREST,
+                Type.DENSE,
+                Type.HILLS);
+        BiomeDictionary
+                .registerBiomeType(RWGBiomes.baseJungleHills, Type.HOT, Type.WET, Type.JUNGLE, Type.FOREST, Type.HILLS);
+        BiomeDictionary.registerBiomeType(
+                RWGBiomes.baseJungleCanyon,
+                Type.HOT,
+                Type.WET,
+                Type.JUNGLE,
+                Type.FOREST,
+                Type.HILLS);
+        BiomeDictionary.registerBiomeType(
+                RWGBiomes.baseRedwoodJungle,
+                Type.HOT,
+                Type.WET,
+                Type.JUNGLE,
+                Type.FOREST,
+                Type.DENSE,
+                Type.HILLS);
         BiomeDictionary.registerBiomeType(RWGBiomes.baseColdForest, Type.FOREST, Type.DENSE, Type.HILLS);
     }
 

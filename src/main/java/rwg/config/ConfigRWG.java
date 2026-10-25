@@ -13,10 +13,10 @@ public class ConfigRWG {
 
     private static final String CONTINENTAL_CATEGORY = "Continental RWG";
     private static final int[] DEFAULT_BIOME_IDS = { 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312,
-            313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325 };
+            313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329 };
 
     public static Configuration config;
-    public static int[] biomeIDs = new int[26];
+    public static int[] biomeIDs = new int[30];
 
     public static boolean generateEmeralds = true;
     public static boolean enableCobblestoneBoulders = true;
@@ -83,6 +83,12 @@ public class ConfigRWG {
             biomeIDs[24] = config.get("biome ids", "24 Temperate Forest", DEFAULT_BIOME_IDS[24], "Temperate Forest")
                     .getInt();
             biomeIDs[25] = config.get("biome ids", "25 Jungle Mesa", DEFAULT_BIOME_IDS[25], "Jungle Mesa").getInt();
+            biomeIDs[26] = config.get("biome ids", "26 High Rainforest", DEFAULT_BIOME_IDS[26], "High Rainforest")
+                    .getInt();
+            biomeIDs[27] = config.get("biome ids", "27 Jungle Hills", DEFAULT_BIOME_IDS[27], "Jungle Hills").getInt();
+            biomeIDs[28] = config.get("biome ids", "28 Jungle Canyon", DEFAULT_BIOME_IDS[28], "Jungle Canyon").getInt();
+            biomeIDs[29] = config.get("biome ids", "29 Redwood Jungle", DEFAULT_BIOME_IDS[29], "Redwood Jungle")
+                    .getInt();
 
             generateEmeralds = config.getBoolean("Generate Emeralds", "Settings", true, "");
             enableCobblestoneBoulders = config.getBoolean("Enable Cobblestone Boulders", "Settings", true, "");

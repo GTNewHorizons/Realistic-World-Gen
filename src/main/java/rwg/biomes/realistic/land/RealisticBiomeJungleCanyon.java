@@ -25,7 +25,7 @@ public class RealisticBiomeJungleCanyon extends RealisticBiomeBase {
     private SurfaceBase surface;
 
     public RealisticBiomeJungleCanyon() {
-        super(0, RWGBiomes.baseHotForest);
+        super(0, RWGBiomes.baseJungleCanyon);
 
         terrain = new TerrainCanyon(true, 35f, 160f, 60f, 40f, 69f);
         surface = new SurfaceGrassCanyon(Blocks.grass, Blocks.dirt, (byte) 0);

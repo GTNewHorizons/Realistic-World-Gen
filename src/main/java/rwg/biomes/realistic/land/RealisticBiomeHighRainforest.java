@@ -34,7 +34,7 @@ public class RealisticBiomeHighRainforest extends RealisticBiomeBase {
     private PoissonPointNoise largeTreePoints;
 
     public RealisticBiomeHighRainforest() {
-        super(0, RWGBiomes.baseJungle);
+        super(0, RWGBiomes.baseHighRainforest);
 
         terrain = new TerrainHighland(0f, 140f, 68f, 200f);
         surface = new SurfaceGrassland(Blocks.grass, Blocks.dirt, Blocks.stone, Blocks.cobblestone);

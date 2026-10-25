@@ -124,8 +124,7 @@ public class SupportBOP {
                                 130f,
                                 50f,
                                 1.5f)),
-                BiomeCategory.SNOW,
-                BiomePlacement.HOT_BORDER);
+                BiomeCategory.SNOW);
 
         // BRUSHLAND
         Support.addBiome(
@@ -226,7 +225,8 @@ public class SupportBOP {
                                 100f,
                                 50f,
                                 1.5f)),
-                BiomeCategory.SNOW);
+                BiomeCategory.SNOW,
+                BiomePlacement.HOT_BORDER);
 
         // CRAG
         /*
@@ -749,20 +749,6 @@ public class SupportBOP {
          * Blocks.stone, Blocks.cobblestone) ) );
          */
 
-        // TEMPERATE RAINFOREST
-        Support.addBiome(
-                new RealisticBiomeSupport(
-                        BOPCBiomes.temperateRainforest,
-                        RWGBiomes.baseRiverWet,
-                        new TerrainMountainRiver(),
-                        new SurfaceMountainStone(
-                                BOPCBiomes.temperateRainforest.topBlock,
-                                BOPCBiomes.temperateRainforest.fillerBlock,
-                                false,
-                                null,
-                                0.45f)),
-                BiomeCategory.WET);
-
         // THICKET
         /*
          * Support.biomes_hot.add( new RealisticBiomeSupport( BOPCBiomes.thicket, new TerrainGrasslandHills(70f, 180f,
@@ -859,7 +845,8 @@ public class SupportBOP {
                                 BOPCBiomes.tundra.fillerBlock,
                                 Blocks.stone,
                                 Blocks.cobblestone)),
-                BiomeCategory.SNOW);
+                BiomeCategory.SNOW,
+                BiomePlacement.HOT_BORDER);
 
         // WASTELAND
         /*

@@ -30,7 +30,7 @@ public class RealisticBiomeRedwoodJungle extends RealisticBiomeBase {
     private SurfaceBase surface;
 
     public RealisticBiomeRedwoodJungle() {
-        super(0, RWGBiomes.baseJungle);
+        super(0, RWGBiomes.baseRedwoodJungle);
         terrain = new TerrainHilly(230f, 100f, 0f);
         surface = new SurfaceGrassland(Blocks.grass, Blocks.dirt, Blocks.stone, Blocks.cobblestone);
     }

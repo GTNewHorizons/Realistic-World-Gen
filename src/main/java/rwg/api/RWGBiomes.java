@@ -35,6 +35,10 @@ public class RWGBiomes {
     public static BiomeGenBase baseOasis;
     public static BiomeGenBase baseTemperateForest;
     public static BiomeGenBase baseJungleMesa;
+    public static BiomeGenBase baseHighRainforest;
+    public static BiomeGenBase baseJungleHills;
+    public static BiomeGenBase baseJungleCanyon;
+    public static BiomeGenBase baseRedwoodJungle;
 
     /*
      * This function will never break. use this instead of the above.
@@ -44,6 +48,6 @@ public class RWGBiomes {
                 baseRiverOasis, baseOceanIce, baseOceanCold, baseOceanTemperate, baseOceanHot, baseOceanWet,
                 baseSnowDesert, baseSnowForest, baseColdPlains, baseColdForest, baseHotPlains, baseHotForest,
                 baseHotDesert, basePlains, baseTropicalIsland, baseRedwood, baseJungle, baseOasis, baseTemperateForest,
-                baseJungleMesa };
+                baseJungleMesa, baseHighRainforest, baseJungleHills, baseJungleCanyon, baseRedwoodJungle };
     }
 }
