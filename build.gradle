@@ -50,10 +50,10 @@ abstract class DownloadProfilerArchive extends DefaultTask {
 
 tasks.register('runPreview', JavaExec) {
     group = 'verification'
-    description = 'Opens the offline RWG_CONTINENT debug map'
+    description = 'Opens the offline RWG2_CONTINENTS debug map'
     dependsOn previewClasses
     classpath = sourceSets.preview.runtimeClasspath
-    mainClass = 'rwg.world.RWGPreviewTool'
+    mainClass = 'rwg2.world.RWGPreviewTool'
     maxHeapSize = '1g'
 }
 
@@ -62,9 +62,9 @@ tasks.register('calibrateOceanCoverage', JavaExec) {
     description = 'Samples ocean coverage for the configured continent geometry and target fractions'
     dependsOn previewClasses
     classpath = sourceSets.preview.runtimeClasspath
-    mainClass = 'rwg.world.OceanCoverageCalibration'
+    mainClass = 'rwg2.world.OceanCoverageCalibration'
     maxHeapSize = '1g'
-    systemProperties System.properties.findAll { key, value -> key.toString().startsWith('rwg.') }
+    systemProperties System.properties.findAll { key, value -> key.toString().startsWith('rwg2.') }
 }
 
 def asyncProfilerVersion = '4.5'
@@ -103,12 +103,12 @@ tasks.register('runPerfCheck', JavaExec) {
     description = 'Profiles preview world generation and opens an async-profiler flame graph'
     dependsOn previewClasses, installAsyncProfiler
     classpath = sourceSets.preview.runtimeClasspath
-    mainClass = 'rwg.world.RWGPreviewTool'
+    mainClass = 'rwg2.world.RWGPreviewTool'
     maxHeapSize = '1g'
     args '--instrument'
 
     def profileTimestamp = new java.text.SimpleDateFormat("dd.MM.yyyy_HH'h'mm").format(new Date())
-    def flameGraph = layout.buildDirectory.file("profiles/rwg-preview_${profileTimestamp}.html")
+    def flameGraph = layout.buildDirectory.file("profiles/rwg2-preview_${profileTimestamp}.html")
     doFirst {
         def profile = flameGraph.get().asFile
         profile.parentFile.mkdirs()
@@ -118,7 +118,7 @@ tasks.register('runPerfCheck', JavaExec) {
         def libraryName = hostOs.contains('mac') ? 'libasyncProfiler.dylib' : 'libasyncProfiler.so'
         def library = new File(asyncProfilerDirectory.get().asFile, "lib/${libraryName}")
         if (!library.isFile()) throw new GradleException("async-profiler library not found at ${library}")
-        systemProperty 'rwg.asyncProfilerOutput', profile.absolutePath
+        systemProperty 'rwg2.asyncProfilerOutput', profile.absolutePath
         jvmArgs "-agentpath:${library}=start,event=cpu,interval=1ms"
     }
     doLast {
